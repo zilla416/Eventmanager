@@ -1,12 +1,23 @@
-import { createApp } from 'vue';
-import './bootstrap';
+import { createApp } from "vue";
+import "./bootstrap";
 
-const test = createApp({
+const counterapp = createApp({
     data() {
         return {
-            message: "123456"
-        }
-    }
+            count: 0,
+        };
+    },
+    methods: {
+        increment() {
+            this.count++;
+        },
+        decrement() {
+            this.count--;
+        },
+        reset() {
+            this.count = 0;
+        },
+    },
 });
 
-test.mount('#test');
+counterapp.mount("#counterapp");
