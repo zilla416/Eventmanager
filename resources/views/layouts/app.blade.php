@@ -19,7 +19,7 @@
             <div id="header-buttons" class="flex flex-row items-center gap-2 font-semibold">
                 <a class="flex flex-row items-center gap-3 py-2 px-4 rounded-lg hover:bg-gray-200" href=""><img class="w-5 h-5" src="{{ Vite::asset('resources/img/location-icon.png') }}" alt="">Utrecht, NL</a>
                 <a class="py-2 px-4 rounded-lg hover:bg-gray-200" href="">Sign In</a>
-                <a class="py-2 px-4 rounded-lg hover:bg-gray-200" href=""><img src="{{ Vite::asset('resources/img/user-icon.png') }}" alt="">account</a>
+                <a class="py-2 px-4 rounded-lg hover:bg-gray-200" href=""><img class="w-4" src="{{ Vite::asset('resources/img/user-icon.png') }}" alt="">account</a>
             </div>
         </div>
         <nav>

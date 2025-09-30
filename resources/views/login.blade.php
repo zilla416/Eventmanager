@@ -1,16 +1,15 @@
-@extends('layouts.app')
-
-@section('title', 'Login Page')
-
-@section('content')
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css'])
+    @stack('styles')
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center h-screen">
 
     <div class="w-full max-w-sm bg-white rounded-lg shadow-md p-6">
@@ -54,8 +53,7 @@
                 </label>
             </div>
 
-            <button type="submit"
-                class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
                 Login
             </button>
         </form>
@@ -66,4 +64,5 @@
     </div>
 
 </body>
+
 </html>
