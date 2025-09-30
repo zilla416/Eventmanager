@@ -5,9 +5,6 @@
 @section('content')
 <h1>Homepage</h1>
 <div class="flex flex-col">
-    <a href="{{  route('eventpage') }}">Event page</a>
-    <a href="{{  route('counterpage') }}">Counter page</a>
-    <a href="{{  route('aboutpage') }}">About page</a>
     <a href="{{  route('loginpage') }}">Login page</a>
 </div>
 @endsection

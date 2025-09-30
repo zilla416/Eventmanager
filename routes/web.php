@@ -9,16 +9,6 @@ Route::get('/', function () {
     return view('home');
 })->name('homepage');
 
-// Counter page
-Route::get('/counter', function () {
-    return view('counter');
-})->name('counterpage');
-
-// About page
-Route::get('/about', function () {
-    return view('about');
-})->name('aboutpage');
-
 // Login (GET shows form, POST handles login)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('loginpage');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
