@@ -6,10 +6,6 @@ Route::get('/', function () {
     return view('home');
 })->name('homepage');
 
-Route::get('/counter', function () {
-    return view('counter');
-})->name('counterpage');
-
-Route::get('/about', function() {
-    return view('about');
-})->name('aboutpage');
+Route::get('/event', function() {
+    return view('event');
+})->name('eventpage');
