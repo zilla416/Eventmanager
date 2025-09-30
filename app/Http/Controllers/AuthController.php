@@ -21,7 +21,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard'); // Change to your protected page
+            return redirect()->intended('/home'); // Change to your protected page
         }
 
         return back()->withErrors([
