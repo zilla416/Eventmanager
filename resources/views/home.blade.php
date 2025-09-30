@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="flex flex-col">
+
     @if($event)
         <div class="border border-gray-300 max-w-2xl mx-auto p-20">
             <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}" class="mb-4">
