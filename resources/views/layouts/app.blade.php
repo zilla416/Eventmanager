@@ -13,7 +13,7 @@
 
 <body class="max-w-7xl mx-auto">
     <header class="flex flex-col">
-        <div class="h-22 flex flex-row justify-between items-center">
+        <div class="pt-6 pb-3 flex flex-row justify-between items-center border-b border-gray-200">
             <h1 class="text-blue-600 font-bold text-3xl">EventManager</h1>
             <input class="border border-gray-300 rounded-lg outline-gray-400 text-md pl-4 pr-10 py-2 w-2xl" type="text"
                 placeholder="Search for events, artists, teams, and more">
@@ -31,8 +31,13 @@
                     Account</a>
             </div>
         </div>
-        <nav>
-            <a class="font-medium text-lg" href="#">Sports</a>
+        <nav class="flex flex-row items-center gap-6 py-3 font-medium">
+            <a class="hover:text-blue-600" href="#">Sports</a>
+            <a class="hover:text-blue-600" href="#">Concerts</a>
+            <a class="hover:text-blue-600" href="#">Theater</a>
+            <a class="hover:text-blue-600" href="#">Comedy</a>
+            <a class="hover:text-blue-600" href="#">Family</a>
+            <a class="hover:text-blue-600" href="#">Sell Tickets</a>
         </nav>
     </header>
     @yield('content')
