@@ -11,42 +11,35 @@
     @stack('styles')
 </head>
 
-<body class="max-w-7xl mx-auto bg-gray-50">
+<body class="bg-gray-50">
     <div class="min-h-screen">
         <!-- Header -->
-        <header class="flex flex-col">
-            <div class="pt-6 pb-3 flex flex-row justify-between items-center border-b border-gray-200">
-                <h1 class="text-blue-600 font-bold text-3xl">EventManager</h1>
-                <div onmousedown="event.preventDefault()" onclick="document.getElementById('search-input').focus();" class="flex flew-row items-center gap-3 border border-gray-300 rounded-lg text-md pl-4 pr-10 py-2 w-2xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6 text-gray-400">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
-                    <input id="search-input" class="outline-none w-full" type="text" placeholder="Search for events, artists, teams, and more">
-                </div>
-                <div id="header-buttons" class="flex flex-row items-center gap-2 font-semibold">
-                    <a class="flex flex-row items-center gap-3 py-2 px-4 rounded-lg duration-300 transition hover:bg-gray-200" href=""><img
-                            class="w-5 h-5" src="{{ Vite::asset('resources/img/location-icon.png') }}" alt="">Utrecht,
-                        NL</a>
-                    <a class="py-2 px-4 rounded-lg duration-300 transition hover:bg-gray-200" href="{{ route('register') }}">Sign In</a>
-                    <a class="flex flex-row items-center gap-3 bg-blue-600 text-white py-2 px-4 rounded-lg duration-300 transition hover:bg-blue-700"
-                        href="{{ route('loginpage') }}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                        </svg>
-                        Account</a>
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <!-- User Profile Section -->
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                            JD
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">John Doe</h1>
+                            <p class="text-gray-600">john.doe@example.com</p>
+                            <p class="text-sm text-gray-500">Member since January 2022</p>
+                        </div>
+                    </div>
+
+                    <!-- Header Actions -->
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-cog w-6 h-6"></i>
+                        </button>
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+                            Sign Out
+                        </button>
+                    </div>
                 </div>
             </div>
-            <nav class="flex flex-row items-center gap-6 py-3 font-medium">
-                <a class="duration-100 transition hover:text-blue-600" href="#">Sports</a>
-                <a class="duration-100 transition hover:text-blue-600" href="#">Concerts</a>
-                <a class="duration-100 transition hover:text-blue-600" href="#">Theater</a>
-                <a class="duration-100 transition hover:text-blue-600" href="#">Comedy</a>
-                <a class="duration-100 transition hover:text-blue-600" href="#">Family</a>
-                <a class="duration-100 transition hover:text-blue-600" href="#">Sell Tickets</a>
-            </nav>
         </header>
 
         <!-- Main Content -->
