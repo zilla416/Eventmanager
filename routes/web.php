@@ -104,3 +104,98 @@ Route::get('/account', function () {
 Route::get('/account/settings', function () {
     return view('account-settings');
 })->name('account.settings');
+
+// CMS Dashboard for Event Organizers and Admins
+Route::get('/admin/cms', function () {
+    // Mock data for the CMS dashboard
+    $totalEvents = 25;
+    $totalUsers = 1250;
+    $totalTicketsSold = 8540;
+    $totalRevenue = 425000;
+
+    // Recent events data
+    $recentEvents = [
+        [
+            'id' => 1,
+            'title' => 'Summer Music Festival 2025',
+            'date' => '2025-07-15',
+            'location' => 'Central Park, NY',
+            'tickets_sold' => 1500,
+            'capacity' => 2000,
+            'status' => 'active',
+            'revenue' => 75000
+        ],
+        [
+            'id' => 2,
+            'title' => 'Tech Innovation Summit',
+            'date' => '2025-06-22',
+            'location' => 'Convention Center, SF',
+            'tickets_sold' => 850,
+            'capacity' => 1000,
+            'status' => 'active',
+            'revenue' => 42500
+        ],
+        [
+            'id' => 3,
+            'title' => 'Basketball Championship',
+            'date' => '2025-05-18',
+            'location' => 'Sports Arena, LA',
+            'tickets_sold' => 2200,
+            'capacity' => 2200,
+            'status' => 'sold_out',
+            'revenue' => 110000
+        ]
+    ];
+
+    return view('cms', compact('totalEvents', 'totalUsers', 'totalTicketsSold', 'totalRevenue', 'recentEvents'));
+})->name('admin.cms');
+
+// Organizer CMS Dashboard - Limited functionality for event organizers
+Route::get('/organizer/cms', function () {
+    // Mock data for organizer's own events only
+    $organizerName = 'John Smith'; // In production, this would come from authentication
+
+    // Organizer's events only (subset of all events)
+    $organizerEvents = [
+        [
+            'id' => 1,
+            'title' => 'Summer Music Festival 2025',
+            'date' => '2025-07-15',
+            'location' => 'Central Park, NY',
+            'tickets_sold' => 1500,
+            'capacity' => 2000,
+            'status' => 'active',
+            'revenue' => 75000,
+            'created_at' => '2025-01-15'
+        ],
+        [
+            'id' => 4,
+            'title' => 'Local Art Exhibition',
+            'date' => '2025-08-12',
+            'location' => 'Community Gallery, Brooklyn',
+            'tickets_sold' => 120,
+            'capacity' => 200,
+            'status' => 'active',
+            'revenue' => 2400,
+            'created_at' => '2025-02-20'
+        ],
+        [
+            'id' => 5,
+            'title' => 'Jazz Night Concert',
+            'date' => '2025-09-05',
+            'location' => 'Blue Note Club, NYC',
+            'tickets_sold' => 180,
+            'capacity' => 180,
+            'status' => 'sold_out',
+            'revenue' => 5400,
+            'created_at' => '2025-03-10'
+        ]
+    ];
+
+    // Calculate organizer's stats
+    $totalOrganizerEvents = count($organizerEvents);
+    $totalOrganizerRevenue = array_sum(array_column($organizerEvents, 'revenue'));
+    $totalOrganizerTickets = array_sum(array_column($organizerEvents, 'tickets_sold'));
+
+    return view('organizer-cms', compact('organizerName', 'organizerEvents', 'totalOrganizerEvents', 'totalOrganizerRevenue', 'totalOrganizerTickets'));
+})->name('organizer.cms');

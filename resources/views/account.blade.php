@@ -31,6 +31,12 @@
 
                     <!-- Header Actions -->
                     <div class="flex items-center space-x-4">
+                        <a href="{{ route('organizer.cms') }}" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg flex items-center">
+                            <i class="fas fa-user-tie mr-2"></i>Organizer
+                        </a>
+                        <a href="{{ route('admin.cms') }}" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center">
+                            <i class="fas fa-tools mr-2"></i>Admin CMS
+                        </a>
                         <button class="p-2 text-gray-400 hover:text-gray-600">
                             <i class="fas fa-cog w-6 h-6"></i>
                         </button>
