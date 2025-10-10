@@ -1,118 +1,357 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Home Page')
+@section('title', 'Discover Events')
 
 @section('content')
-    <div class="flex flex-col">
-        <section id="hero-section">
+<!-- Hero Section -->
+<div class="relative min-h-screen overflow-hidden bg-black">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
+        <img src="{{ Vite::asset('resources/img/concert1.png') }}" 
+             alt="Hero background" 
+             class="w-full h-full object-cover brightness-[0.35]">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black"></div>
+    </div>
 
-        </section>
-        <img class="h-100 object-cover"
-            src="https://images.unsplash.com/photo-1740459057005-65f000db582f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb25jZXJ0JTIwc3RhZ2UlMjBsaWdodHN8ZW58MXx8fHwxNzU4NzgyMzg1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-            alt="">
-        <section id="events-section" class="flex flex-col gap-5 my-12">
-            <div class="">
-                <h2 class="font-bold text-3xl">Discover Events</h2>
-                <p class="text-black/60">Find the perfect event for you</p>
+    <!-- Hero Content -->
+    <div class="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-6 md:px-8">
+        <div class="max-w-5xl mx-auto space-y-8">
+            
+            <!-- Main Heading -->
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight">
+                Discover Your Next<br>Unforgettable Experience
+            </h1>
+            
+            <!-- Subheading -->
+            <p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto">
+                Find and book tickets to the best events in your city
+            </p>
+
+            <!-- Search Bar -->
+            <div class="max-w-3xl mx-auto mt-12">
+                <div class="bg-white rounded-2xl p-3 shadow-2xl">
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <div class="flex-1">
+                            <input type="text" 
+                                   id="eventSearch"
+                                   placeholder="Search events, artists, venues..." 
+                                   class="w-full px-6 py-4 bg-transparent text-black placeholder-gray-500 focus:outline-none text-lg">
+                        </div>
+                        <div class="flex-1">
+                            <input type="text" 
+                                   id="locationSearch"
+                                   placeholder="Utrecht" 
+                                   class="w-full px-6 py-4 bg-transparent text-black placeholder-gray-500 focus:outline-none text-lg border-t md:border-t-0 md:border-l border-gray-200">
+                        </div>
+                        <button id="heroSearchBtn" class="px-8 py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-900 transition-all duration-200 whitespace-nowrap">
+                            Search
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="flex flex-row items-center w-full px-2 h-10 bg-gray-100 rounded-xl">
-                <Button>
-                    All Events
-                </Button>
+
+            <!-- Quick Categories -->
+            <div class="flex flex-wrap gap-3 justify-center mt-12">
+                <button data-quick-category="music" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                    <span class="font-medium"> Music</span>
+                </button>
+                <button data-quick-category="sports" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                    <span class="font-medium"> Sports</span>
+                </button>
+                <button data-quick-category="theater" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                    <span class="font-medium"> Theater</span>
+                </button>
+                <button data-quick-category="comedy" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                    <span class="font-medium"> Comedy</span>
+                </button>
+                <button data-quick-category="family" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                    <span class="font-medium"> Family</span>
+                </button>
             </div>
-            @if($event)
-                <div class="flex flex-row flex-wrap gap-4">
-                    <a href="{{ route('eventpage') }}">
-                        <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
-                            <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
-                                class="w-full rounded-tl-xl rounded-tr-xl">
-                            <div id="event-content" class="px-4">
-                                <p class="font-semibold text-xl">{{ $event->title }}</p>
-                                {{-- <p><strong>Location:</strong> {{ $event->location }}</p> --}}
-                                {{-- <p><strong>Adress:</strong> {{ $event->adress }}</p>
-                                <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($event->date)->translatedFormat('d F Y') }}
-                                </p>
-                                <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</p>
-                                <p><strong>Price:</strong> €--</p>
-                                <p class="mt-4">{{ $event->description }}</p> --}}
-                                {{-- <p><strong>Availability:</strong> {{ $event->available_spots }}</p> --}}
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-8 max-w-3xl mx-auto mt-16">
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold mb-2">10K+</div>
+                    <div class="text-sm md:text-base text-gray-400">Events</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold mb-2">500K+</div>
+                    <div class="text-sm md:text-base text-gray-400">Happy Customers</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold mb-2">50+</div>
+                    <div class="text-sm md:text-base text-gray-400">Cities</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <svg class="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+        </svg>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div id="events-section" class="bg-black text-white min-h-screen">
+    <div class="max-w-7xl mx-auto px-6 md:px-8 py-20">
+        
+        <!-- Section Header -->
+        <div class="mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold mb-3">Upcoming Events</h2>
+            <p class="text-lg text-gray-400">Don't miss out on these amazing experiences</p>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="flex gap-3 mb-16 overflow-x-auto pb-3 scrollbar-hide">
+            <button class="category-filter active px-6 py-3 bg-white text-black rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 hover:bg-gray-200" data-category="all">
+                All Events
+            </button>
+            <button class="category-filter px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border border-white/10 hover:border-white/20" data-category="music">
+                Music
+            </button>
+            <button class="category-filter px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border border-white/10 hover:border-white/20" data-category="sports">
+                Sports
+            </button>
+            <button class="category-filter px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border border-white/10 hover:border-white/20" data-category="theater">
+                Theater
+            </button>
+            <button class="category-filter px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border border-white/10 hover:border-white/20" data-category="comedy">
+                Comedy
+            </button>
+            <button class="category-filter px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border border-white/10 hover:border-white/20" data-category="family">
+                Family
+            </button>
+        </div>
+
+        @if($event)
+        <!-- Events Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            @for ($i = 0; $i < 6; $i++)
+            <a href="{{ route('eventpage') }}" class="event-card group block" data-category="music">
+                <div class="bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 h-full hover:transform hover:scale-[1.02]">
+                    <!-- Event Image -->
+                    <div class="aspect-[16/10] overflow-hidden bg-white/5">
+                        <img src="{{ Vite::asset($event->image) }}" 
+                             alt="{{ $event->title }}"
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-out">
+                    </div>
+                    
+                    <!-- Event Details -->
+                    <div class="p-6">
+                        <!-- Meta Info -->
+                        <div class="flex items-center gap-2 text-xs text-gray-500 mb-3 flex-wrap">
+                            <span class="px-3 py-1 bg-white/5 rounded-full border border-white/10">MUSIC</span>
+                            <span></span>
+                            <span>{{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}</span>
+                            <span></span>
+                            <span>{{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</span>
+                        </div>
+                        
+                        <!-- Title -->
+                        <h3 class="text-xl font-bold mb-2 group-hover:text-gray-300 transition line-clamp-2">
+                            {{ $event->title }}
+                        </h3>
+                        
+                        <!-- Location -->
+                        <p class="text-sm text-gray-400 mb-2 flex items-center gap-2">
+                            <span class="truncate">{{ $event->location }}</span>
+                        </p>
+                        
+                        <!-- Description -->
+                        <p class="text-sm text-gray-500 mb-4 line-clamp-2">
+                            {{ $event->description }}
+                        </p>
+                        
+                        <!-- Price & Availability -->
+                        <div class="flex items-center justify-between pt-4 border-t border-white/10">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">From</p>
+                                <p class="text-xl font-bold">€89.50</p>
                             </div>
-                        </div>
-                    </a>
-                    <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
-                        <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
-                            class="w-full rounded-tl-xl rounded-tr-xl">
-                        <div id="event-content" class="px-4">
-                            <p class="font-semibold text-xl">{{ $event->title }}</p>
-                            {{-- <p><strong>Location:</strong> {{ $event->location }}</p> --}}
-                            {{-- <p><strong>Adress:</strong> {{ $event->adress }}</p>
-                            <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($event->date)->translatedFormat('d F Y') }}</p>
-                            <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</p>
-                            <p><strong>Price:</strong> €--</p>
-                            <p class="mt-4">{{ $event->description }}</p> --}}
-                            {{-- <p><strong>Availability:</strong> {{ $event->available_spots }}</p> --}}
-                        </div>
-                    </div>
-                    <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
-                        <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
-                            class="w-full rounded-tl-xl rounded-tr-xl">
-                        <div id="event-content" class="px-4">
-                            <p class="font-semibold text-xl">{{ $event->title }}</p>
-                            {{-- <p><strong>Location:</strong> {{ $event->location }}</p> --}}
-                            {{-- <p><strong>Adress:</strong> {{ $event->adress }}</p>
-                            <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($event->date)->translatedFormat('d F Y') }}</p>
-                            <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</p>
-                            <p><strong>Price:</strong> €--</p>
-                            <p class="mt-4">{{ $event->description }}</p> --}}
-                            {{-- <p><strong>Availability:</strong> {{ $event->available_spots }}</p> --}}
-                        </div>
-                    </div>
-                    <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
-                        <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
-                            class="w-full rounded-tl-xl rounded-tr-xl">
-                        <div id="event-content" class="px-4">
-                            <p class="font-semibold text-xl">{{ $event->title }}</p>
-                            {{-- <p><strong>Location:</strong> {{ $event->location }}</p> --}}
-                            {{-- <p><strong>Adress:</strong> {{ $event->adress }}</p>
-                            <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($event->date)->translatedFormat('d F Y') }}</p>
-                            <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</p>
-                            <p><strong>Price:</strong> €--</p>
-                            <p class="mt-4">{{ $event->description }}</p> --}}
-                            {{-- <p><strong>Availability:</strong> {{ $event->available_spots }}</p> --}}
-                        </div>
-                    </div>
-                    <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
-                        <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
-                            class="w-full rounded-tl-xl rounded-tr-xl">
-                        <div id="event-content" class="px-4">
-                            <p class="font-semibold text-xl">{{ $event->title }}</p>
-                            {{-- <p><strong>Location:</strong> {{ $event->location }}</p> --}}
-                            {{-- <p><strong>Adress:</strong> {{ $event->adress }}</p>
-                            <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($event->date)->translatedFormat('d F Y') }}</p>
-                            <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</p>
-                            <p><strong>Price:</strong> €--</p>
-                            <p class="mt-4">{{ $event->description }}</p> --}}
-                            {{-- <p><strong>Availability:</strong> {{ $event->available_spots }}</p> --}}
-                        </div>
-                    </div>
-                    <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
-                        <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
-                            class="w-full rounded-tl-xl rounded-tr-xl">
-                        <div id="event-content" class="px-4">
-                            <p class="font-semibold text-xl">{{ $event->title }}</p>
-                            {{-- <p><strong>Location:</strong> {{ $event->location }}</p> --}}
-                            {{-- <p><strong>Adress:</strong> {{ $event->adress }}</p>
-                            <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($event->date)->translatedFormat('d F Y') }}</p>
-                            <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</p>
-                            <p><strong>Price:</strong> €--</p>
-                            <p class="mt-4">{{ $event->description }}</p> --}}
-                            {{-- <p><strong>Availability:</strong> {{ $event->available_spots }}</p> --}}
+                            <div class="text-right">
+                                <p class="text-xs text-gray-500 mb-1">Available</p>
+                                <p class="text-sm font-semibold text-green-400">{{ $event->available_spots }} spots</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            @else
-                <p class="text-center mt-10">No events found.</p>
-            @endif
-        </section>
+            </a>
+            @endfor
+        </div>
+
+        <!-- Load More Button -->
+        <div class="text-center">
+            <button id="loadMoreBtn" class="px-10 py-4 border border-white/20 rounded-full hover:bg-white/5 transition-all duration-200 text-sm font-medium hover:border-white/30">
+                Show More Events
+            </button>
+        </div>
+
+        @else
+        <!-- Empty State -->
+        <div class="text-center py-32">
+            <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10">
+                <svg class="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">No events available</h3>
+            <p class="text-gray-400 text-lg">Check back soon for upcoming events</p>
+        </div>
+        @endif
+
     </div>
+
+    <!-- CTA Section -->
+    <div class="border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 md:px-8 py-24">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                    Create your own event
+                </h2>
+                <p class="text-xl text-gray-400 mb-12 leading-relaxed">
+                    Join thousands of organizers who trust EventManager to sell tickets and manage their events seamlessly
+                </p>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <a href="{{ route('about') }}" class="px-10 py-4 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-all duration-200">
+                        Get Started Free
+                    </a>
+                    <a href="{{ route('contact') }}" class="px-10 py-4 border border-white/20 rounded-full hover:bg-white/5 transition-all duration-200 font-medium hover:border-white/30">
+                        See How It Works
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.category-filter');
+        const eventCards = document.querySelectorAll('.event-card');
+        
+        // Check for search parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        if (searchParam) {
+            const eventSearchInput = document.getElementById('eventSearch');
+            if (eventSearchInput) {
+                eventSearchInput.value = searchParam;
+            }
+            
+            setTimeout(() => {
+                const eventsSection = document.getElementById('events-section');
+                if (eventsSection) {
+                    eventsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                filterEventsBySearch(searchParam);
+            }, 100);
+        }
+        
+        function filterEventsBySearch(searchTerm) {
+            const term = searchTerm.toLowerCase();
+            eventCards.forEach(card => {
+                const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
+                const description = card.querySelector('.line-clamp-2')?.textContent.toLowerCase() || '';
+                
+                if (title.includes(term) || description.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            filterButtons.forEach(btn => {
+                if (btn.dataset.category === 'all') {
+                    btn.classList.add('active', 'bg-white', 'text-black', 'font-semibold');
+                    btn.classList.remove('bg-white/5', 'text-white', 'font-medium');
+                } else {
+                    btn.classList.remove('active', 'bg-white', 'text-black', 'font-semibold');
+                    btn.classList.add('bg-white/5', 'text-white', 'font-medium');
+                }
+            });
+        }
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.dataset.category;
+                
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('active', 'bg-white', 'text-black', 'font-semibold');
+                    btn.classList.add('bg-white/5', 'text-white', 'font-medium');
+                });
+                this.classList.add('active', 'bg-white', 'text-black', 'font-semibold');
+                this.classList.remove('bg-white/5', 'text-white', 'font-medium');
+                
+                eventCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        const searchButton = document.getElementById('heroSearchBtn');
+        const eventSearchInput = document.getElementById('eventSearch');
+
+        if (searchButton) {
+            searchButton.addEventListener('click', function() {
+                const searchTerm = eventSearchInput.value;
+                const eventsSection = document.getElementById('events-section');
+                if (eventsSection) {
+                    eventsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                if (searchTerm) {
+                    filterEventsBySearch(searchTerm);
+                }
+            });
+            
+            eventSearchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
+        }
+
+        const quickCategoryButtons = document.querySelectorAll('[data-quick-category]');
+        quickCategoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.dataset.quickCategory;
+                const eventsSection = document.getElementById('events-section');
+                if (eventsSection) {
+                    eventsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                const filterButton = document.querySelector(`[data-category="${category}"]`);
+                if (filterButton) {
+                    setTimeout(() => filterButton.click(), 500);
+                }
+            });
+        });
+
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function() {
+                alert('Loading more events... (This will be connected to the database later)');
+            });
+        }
+    });
+</script>
 @endsection
