@@ -1,34 +1,100 @@
-<header class="flex flex-col">
-    <div class="pt-6 pb-3 flex flex-row justify-between items-center border-b border-gray-200">
-        <a href="{{ route('homepage') }}"><h1 class="text-blue-600 font-bold text-3xl">EventManager</h1></a>
-        <div onmousedown="event.preventDefault()" onclick="document.getElementById('search-input').focus();" class="flex flew-row items-center gap-3 border border-gray-300 rounded-lg text-md pl-4 pr-10 py-2 w-2xl">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="size-6 text-gray-400">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <input id="search-input" class="outline-none w-full" type="text" placeholder="Search for events, artists, teams, and more">
+<header class="sticky top-0 z-50 backdrop-blur-xl bg-black/80 border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6">
+        <!-- Top Bar -->
+        <div class="flex items-center justify-between py-4">
+            
+            <!-- Logo -->
+            <a href="{{ route('homepage') }}" class="flex items-center gap-2 group">
+                <span class="text-xl font-semibold group-hover:text-gray-300 transition">EventManager</span>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="hidden md:flex items-center flex-1 max-w-md mx-8">
+                <div class="relative w-full">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" 
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" 
+                           id="headerSearch"
+                           placeholder="Search events..." 
+                           class="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-12 pr-4 text-sm 
+                                  placeholder-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/10 transition">
+                </div>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-3">
+                <button id="locationBtn" class="hidden md:flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:text-white transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span id="locationText">Utrecht</span>
+                </button>
+                
+                <a href="{{ route('register') }}" 
+                   class="hidden md:block px-4 py-2 text-sm hover:bg-white/5 rounded-lg transition">
+                    Sign in
+                </a>
+                
+                <a href="{{ route('loginpage') }}" 
+                   class="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-200 transition">
+                    Get Started
+                </a>
+            </div>
         </div>
-        <div id="header-buttons" class="flex flex-row items-center gap-2 font-semibold">
-            <a class="flex flex-row items-center gap-3 py-2 px-4 rounded-lg duration-300 transition hover:bg-gray-200" href=""><img
-                    class="w-5 h-5" src="{{ Vite::asset('resources/img/location-icon.png') }}" alt="">Utrecht,
-                NL</a>
-            <a class="py-2 px-4 rounded-lg duration-300 transition hover:bg-gray-200" href="{{ route('register') }}">Sign In</a>
-            <a class="flex flex-row items-center gap-3 bg-blue-600 text-white py-2 px-4 rounded-lg duration-300 transition hover:bg-blue-700"
-                href="{{  route('loginpage') }}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                </svg>
-                Account</a>
-        </div>
+
+        <!-- Navigation -->
+        <nav class="flex items-center gap-1 py-2 text-sm border-t border-white/5 overflow-x-auto">
+            <a href="{{ route('homepage') }}#sports" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="sports">Sports</a>
+            <a href="{{ route('homepage') }}#music" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="music">Concerts</a>
+            <a href="{{ route('homepage') }}#theater" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="theater">Theater</a>
+            <a href="{{ route('homepage') }}#comedy" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="comedy">Comedy</a>
+            <a href="{{ route('homepage') }}#family" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="family">Family</a>
+            <div class="flex-1"></div>
+            <a href="{{ route('about') }}" class="px-4 py-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition whitespace-nowrap font-medium">
+                Sell Tickets
+            </a>
+        </nav>
     </div>
-    <nav class="flex flex-row items-center gap-6 py-3 font-medium">
-        <a class="duration-100 transition hover:text-blue-600" href="#">Sports</a>
-        <a class="duration-100 transition hover:text-blue-600" href="#">Concerts</a>
-        <a class="duration-100 transition hover:text-blue-600" href="#">Theater</a>
-        <a class="duration-100 transition hover:text-blue-600" href="#">Comedy</a>
-        <a class="duration-100 transition hover:text-blue-600" href="#">Family</a>
-        <a class="duration-100 transition hover:text-blue-600" href="#">Sell Tickets</a>
-    </nav>
 </header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Header Search Functionality
+        const headerSearch = document.getElementById('headerSearch');
+        if (headerSearch) {
+            headerSearch.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = this.value;
+                    if (searchTerm) {
+                        // Redirect to homepage with search parameter
+                        window.location.href = `{{ route('homepage') }}?search=${encodeURIComponent(searchTerm)}`;
+                    }
+                }
+            });
+        }
+
+        // Location Button (placeholder for future functionality)
+        const locationBtn = document.getElementById('locationBtn');
+        if (locationBtn) {
+            locationBtn.addEventListener('click', function() {
+                const newLocation = prompt('Enter your city:', document.getElementById('locationText').textContent);
+                if (newLocation) {
+                    document.getElementById('locationText').textContent = newLocation;
+                    localStorage.setItem('userLocation', newLocation);
+                }
+            });
+            
+            // Load saved location
+            const savedLocation = localStorage.getItem('userLocation');
+            if (savedLocation) {
+                document.getElementById('locationText').textContent = savedLocation;
+            }
+        }
+    });
+</script>
