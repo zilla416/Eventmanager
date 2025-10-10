@@ -56,7 +56,7 @@
             <a href="{{ route('homepage') }}#comedy" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="comedy">Comedy</a>
             <a href="{{ route('homepage') }}#family" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="family">Family</a>
             <div class="flex-1"></div>
-            <a href="{{ route('about') }}" class="px-4 py-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition whitespace-nowrap font-medium">
+            <a href="{{ route('admin.cms') }}" class="px-4 py-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition whitespace-nowrap font-medium">
                 Sell Tickets
             </a>
         </nav>
