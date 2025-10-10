@@ -1,17 +1,697 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Manager CMS - Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    @vite(['resources/css/app.css'])
-    @stack('styles')
-</head>
 
-<body class="bg-gray-50">
+
+@section('title', 'Admin Dashboard')@section('title', 'Admin Dashboard')
+
+
+
+@section('content')@section('content')
+
+<div class="min-h-screen bg-black text-white"><div class="min-h-screen bg-black text-white">
+
+    <!-- Header -->    <!-- Header -->
+
+    <div class="border-b border-white/10">    <div class="border-b border-white/10">
+
+        <div class="max-w-7xl mx-auto px-6 md:px-8 py-6">        <div class="max-w-7xl mx-auto px-6 md:px-8 py-6">
+
+            <div class="flex justify-between items-center">            <div class="flex justify-between items-center">
+
+                <div>                <div>
+
+                    <h1 class="text-3xl md:text-4xl font-bold mb-1">Admin Dashboard</h1>                    <h1 class="text-3xl md:text-4xl font-bold mb-1">Admin Dashboard</h1>
+
+                    <p class="text-gray-400">Manage your events and platform</p>                    <p class="text-gray-400">Manage your events and platform</p>
+
+                </div>                </div>
+
+                <a href="{{ route('account') }}" class="px-4 py-2 border border-white/20 rounded-full text-sm font-medium hover:bg-white/5 transition">                <a href="{{ route('account') }}" class="px-4 py-2 border border-white/20 rounded-full text-sm font-medium hover:bg-white/5 transition">
+
+                    User View                    User View
+
+                </a>                </a>
+
+            </div>            </div>
+
+        </div>        </div>
+
+    </div>    </div>
+
+
+
+    <!-- Main Content -->    <!-- Main Content -->
+
+    <div class="max-w-7xl mx-auto px-6 md:px-8 py-12">    <div class="max-w-7xl mx-auto px-6 md:px-8 py-12">
+
+                
+
+        <!-- Stats Grid -->        <!-- Stats Grid -->
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+
+                <div class="text-sm text-gray-400 mb-2">Total Events</div>                <div class="text-sm text-gray-400 mb-2">Total Events</div>
+
+                <div class="text-3xl font-bold mb-1">{{ $totalEvents }}</div>                <div class="text-3xl font-bold mb-1">{{ $totalEvents }}</div>
+
+                <div class="text-xs text-gray-500">All time</div>                <div class="text-xs text-gray-500">All time</div>
+
+            </div>            </div>
+
+
+
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+
+                <div class="text-sm text-gray-400 mb-2">Registered Users</div>                <div class="text-sm text-gray-400 mb-2">Registered Users</div>
+
+                <div class="text-3xl font-bold mb-1">{{ number_format($totalUsers) }}</div>                <div class="text-3xl font-bold mb-1">{{ number_format($totalUsers) }}</div>
+
+                <div class="text-xs text-gray-500">Platform wide</div>                <div class="text-xs text-gray-500">Platform wide</div>
+
+            </div>            </div>
+
+
+
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+
+                <div class="text-sm text-gray-400 mb-2">Tickets Sold</div>                <div class="text-sm text-gray-400 mb-2">Tickets Sold</div>
+
+                <div class="text-3xl font-bold mb-1">{{ number_format($totalTicketsSold) }}</div>                <div class="text-3xl font-bold mb-1">{{ number_format($totalTicketsSold) }}</div>
+
+                <div class="text-xs text-gray-500">Total sales</div>                <div class="text-xs text-gray-500">Total sales</div>
+
+            </div>            </div>
+
+
+
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+
+                <div class="text-sm text-gray-400 mb-2">Total Revenue</div>                <div class="text-sm text-gray-400 mb-2">Total Revenue</div>
+
+                <div class="text-3xl font-bold mb-1">${{ number_format($totalRevenue) }}</div>                <div class="text-3xl font-bold mb-1">${{ number_format($totalRevenue) }}</div>
+
+                <div class="text-xs text-gray-500">Gross earnings</div>                <div class="text-xs text-gray-500">Gross earnings</div>
+
+            </div>            </div>
+
+        </div>        </div>
+
+
+
+        <!-- Navigation Tabs -->        <!-- Navigation Tabs -->
+
+        <div class="flex gap-3 mb-8 overflow-x-auto pb-3 scrollbar-hide">        <div class="flex gap-3 mb-8 overflow-x-auto pb-3 scrollbar-hide">
+
+            <button onclick="showTab('events')" id="events-tab" class="tab-btn active px-6 py-3 bg-white text-black rounded-full text-sm font-semibold whitespace-nowrap transition">            <button onclick="showTab('events')" id="events-tab" class="tab-btn active px-6 py-3 bg-white text-black rounded-full text-sm font-semibold whitespace-nowrap transition">
+
+                Events                Events
+
+            </button>            </button>
+
+            <button onclick="showTab('users')" id="users-tab" class="tab-btn px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition border border-white/10">            <button onclick="showTab('users')" id="users-tab" class="tab-btn px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition border border-white/10">
+
+                Users                Users
+
+            </button>            </button>
+
+            <button onclick="showTab('analytics')" id="analytics-tab" class="tab-btn px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition border border-white/10">            <button onclick="showTab('analytics')" id="analytics-tab" class="tab-btn px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition border border-white/10">
+
+                Analytics                Analytics
+
+            </button>            </button>
+
+            <button onclick="showTab('settings')" id="settings-tab" class="tab-btn px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition border border-white/10">            <button onclick="showTab('settings')" id="settings-tab" class="tab-btn px-6 py-3 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium whitespace-nowrap transition border border-white/10">
+
+                Settings                Settings
+
+            </button>            </button>
+
+        </div>        </div>
+
+
+
+        <!-- Events Tab -->        <!-- Events Tab -->
+
+        <div id="events-content" class="tab-content">        <div id="events-content" class="tab-content">
+
+            <!-- Create Event Button -->            <!-- Create Event Button -->
+
+            <div class="mb-8 flex justify-between items-center">            <div class="mb-8 flex justify-between items-center">
+
+                <h2 class="text-2xl font-bold">Event Management</h2>                <h2 class="text-2xl font-bold">Event Management</h2>
+
+                <button onclick="toggleCreateForm()" class="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">                <button onclick="toggleCreateForm()" class="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
+
+                    + Create Event                    + Create Event
+
+                </button>                </button>
+
+            </div>            </div>
+
+
+
+            <!-- Create Event Form (Hidden by default) -->            <!-- Create Event Form (Hidden by default) -->
+
+            <div id="createEventForm" class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-8 hidden">            <div id="createEventForm" class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-8 hidden">
+
+                <h3 class="text-xl font-semibold mb-6">Create New Event</h3>                <h3 class="text-xl font-semibold mb-6">Create New Event</h3>
+
+                <form class="space-y-6">                <form class="space-y-6">
+
+                    <div class="grid md:grid-cols-2 gap-6">                    <div class="grid md:grid-cols-2 gap-6">
+
+                        <div>                        <div>
+
+                            <label class="block text-sm text-gray-400 mb-2">Event Title</label>                            <label class="block text-sm text-gray-400 mb-2">Event Title</label>
+
+                            <input type="text" placeholder="Concert at Ziggodome"                            <input type="text" placeholder="Concert at Ziggodome"
+
+                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+
+                        </div>                        </div>
+
+                        <div>                        <div>
+
+                            <label class="block text-sm text-gray-400 mb-2">Event Date</label>                            <label class="block text-sm text-gray-400 mb-2">Event Date</label>
+
+                            <input type="date"                            <input type="date"
+
+                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+
+                        </div>                        </div>
+
+                        <div>                        <div>
+
+                            <label class="block text-sm text-gray-400 mb-2">Location</label>                            <label class="block text-sm text-gray-400 mb-2">Location</label>
+
+                            <input type="text" placeholder="Ziggodome, Amsterdam"                            <input type="text" placeholder="Ziggodome, Amsterdam"
+
+                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+
+                        </div>                        </div>
+
+                        <div>                        <div>
+
+                            <label class="block text-sm text-gray-400 mb-2">Max Capacity</label>                            <label class="block text-sm text-gray-400 mb-2">Max Capacity</label>
+
+                            <input type="number" placeholder="17000"                            <input type="number" placeholder="17000"
+
+                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+
+                        </div>                        </div>
+
+                    </div>                    </div>
+
+                    <div>                    <div>
+
+                        <label class="block text-sm text-gray-400 mb-2">Description</label>                        <label class="block text-sm text-gray-400 mb-2">Description</label>
+
+                        <textarea rows="4" placeholder="Event description..."                        <textarea rows="4" placeholder="Event description..."
+
+                                  class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition resize-none"></textarea>                                  class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition resize-none"></textarea>
+
+                    </div>                    </div>
+
+                    <div class="flex gap-4">                    <div class="flex gap-4">
+
+                        <button type="submit" class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">                        <button type="submit" class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
+
+                            Create Event                            Create Event
+
+                        </button>                        </button>
+
+                        <button type="button" onclick="toggleCreateForm()" class="px-8 py-3 border border-white/20 rounded-full font-medium hover:bg-white/5 transition">                        <button type="button" onclick="toggleCreateForm()" class="px-8 py-3 border border-white/20 rounded-full font-medium hover:bg-white/5 transition">
+
+                            Cancel                            Cancel
+
+                        </button>                        </button>
+
+                    </div>                    </div>
+
+                </form>                </form>
+
+            </div>            </div>
+
+
+
+            <!-- Events List -->            <!-- Events List -->
+
+            <div class="space-y-4">            <div class="space-y-4">
+
+                @foreach($recentEvents as $event)                @foreach($recentEvents as $event)
+
+                <div class="bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition">                <div class="bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition">
+
+                    <div class="flex justify-between items-start mb-4">                    <div class="flex justify-between items-start mb-4">
+
+                        <div class="flex-1">                        <div class="flex-1">
+
+                            <div class="flex items-center gap-3 mb-2">                            <div class="flex items-center gap-3 mb-2">
+
+                                <h3 class="text-xl font-bold">{{ $event['title'] }}</h3>                                <h3 class="text-xl font-bold">{{ $event['title'] }}</h3>
+
+                                @if($event['status'] === 'active')                                @if($event['status'] === 'active')
+
+                                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold border border-green-500/30">Active</span>                                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold border border-green-500/30">Active</span>
+
+                                @else                                @else
+
+                                    <span class="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-semibold border border-red-500/30">Sold Out</span>                                    <span class="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-semibold border border-red-500/30">Sold Out</span>
+
+                                @endif                                @endif
+
+                            </div>                            </div>
+
+                            <p class="text-gray-400 text-sm mb-1">{{ $event['location'] }}</p>                            <p class="text-gray-400 text-sm mb-1">{{ $event['location'] }}</p>
+
+                            <p class="text-gray-500 text-sm">{{ \Carbon\Carbon::parse($event['date'])->format('M j, Y') }}</p>                            <p class="text-gray-500 text-sm">{{ \Carbon\Carbon::parse($event['date'])->format('M j, Y') }}</p>
+
+                        </div>                        </div>
+
+                    </div>                    </div>
+
+                                        
+
+                    <div class="grid grid-cols-3 gap-4 mb-4 pt-4 border-t border-white/10">                    <div class="grid grid-cols-3 gap-4 mb-4 pt-4 border-t border-white/10">
+
+                        <div>                        <div>
+
+                            <div class="text-xs text-gray-500 mb-1">Tickets Sold</div>                            <div class="text-xs text-gray-500 mb-1">Tickets Sold</div>
+
+                            <div class="font-semibold">{{ number_format($event['tickets_sold']) }}/{{ number_format($event['capacity']) }}</div>                            <div class="font-semibold">{{ number_format($event['tickets_sold']) }}/{{ number_format($event['capacity']) }}</div>
+
+                        </div>                        </div>
+
+                        <div>                        <div>
+
+                            <div class="text-xs text-gray-500 mb-1">Revenue</div>                            <div class="text-xs text-gray-500 mb-1">Revenue</div>
+
+                            <div class="font-semibold">${{ number_format($event['revenue']) }}</div>                            <div class="font-semibold">${{ number_format($event['revenue']) }}</div>
+
+                        </div>                        </div>
+
+                        <div>                        <div>
+
+                            <div class="text-xs text-gray-500 mb-1">Fill Rate</div>                            <div class="text-xs text-gray-500 mb-1">Fill Rate</div>
+
+                            <div class="font-semibold">{{ round(($event['tickets_sold'] / $event['capacity']) * 100) }}%</div>                            <div class="font-semibold">{{ round(($event['tickets_sold'] / $event['capacity']) * 100) }}%</div>
+
+                        </div>                        </div>
+
+                    </div>                    </div>
+
+                                        
+
+                    <div class="flex gap-3">                    <div class="flex gap-3">
+
+                        <button class="px-4 py-2 bg-white/10 rounded-lg text-sm font-medium hover:bg-white/20 transition">                        <button class="px-4 py-2 bg-white/10 rounded-lg text-sm font-medium hover:bg-white/20 transition">
+
+                            Edit                            Edit
+
+                        </button>                        </button>
+
+                        <button class="px-4 py-2 bg-white/10 rounded-lg text-sm font-medium hover:bg-white/20 transition">                        <button class="px-4 py-2 bg-white/10 rounded-lg text-sm font-medium hover:bg-white/20 transition">
+
+                            View Details                            View Details
+
+                        </button>                        </button>
+
+                        <button class="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium hover:bg-red-500/30 transition">                        <button class="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium hover:bg-red-500/30 transition">
+
+                            Delete                            Delete
+
+                        </button>                        </button>
+
+                    </div>                    </div>
+
+                </div>                </div>
+
+                @endforeach                @endforeach
+
+            </div>            </div>
+
+        </div>        </div>
+
+
+
+        <!-- Users Tab -->        <!-- Users Tab -->
+
+        <div id="users-content" class="tab-content hidden">        <div id="users-content" class="tab-content hidden">
+
+            <div class="mb-8 flex justify-between items-center">            <div class="mb-8 flex justify-between items-center">
+
+                <h2 class="text-2xl font-bold">User Management</h2>                <h2 class="text-2xl font-bold">User Management</h2>
+
+                <input type="text" placeholder="Search users..."                 <input type="text" placeholder="Search users..." 
+
+                       class="px-4 py-2 bg-white/5 border border-white/10 rounded-full focus:outline-none focus:border-white/20 transition">                       class="px-4 py-2 bg-white/5 border border-white/10 rounded-full focus:outline-none focus:border-white/20 transition">
+
+            </div>            </div>
+
+
+
+            <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">            <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+
+                <div class="overflow-x-auto">                <div class="overflow-x-auto">
+
+                    <table class="w-full">                    <table class="w-full">
+
+                        <thead>                        <thead>
+
+                            <tr class="border-b border-white/10">                            <tr class="border-b border-white/10">
+
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">User</th>                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">User</th>
+
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Email</th>                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Email</th>
+
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Events</th>                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Events</th>
+
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Status</th>                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+
+                            </tr>                            </tr>
+
+                        </thead>                        </thead>
+
+                        <tbody class="divide-y divide-white/10">                        <tbody class="divide-y divide-white/10">
+
+                            <tr>                            <tr>
+
+                                <td class="px-6 py-4">                                <td class="px-6 py-4">
+
+                                    <div class="flex items-center gap-3">                                    <div class="flex items-center gap-3">
+
+                                        <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-semibold">JD</div>                                        <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-semibold">JD</div>
+
+                                        <span class="font-medium">John Doe</span>                                        <span class="font-medium">John Doe</span>
+
+                                    </div>                                    </div>
+
+                                </td>                                </td>
+
+                                <td class="px-6 py-4 text-gray-400">john.doe@example.com</td>                                <td class="px-6 py-4 text-gray-400">john.doe@example.com</td>
+
+                                <td class="px-6 py-4 text-gray-400">24</td>                                <td class="px-6 py-4 text-gray-400">24</td>
+
+                                <td class="px-6 py-4">                                <td class="px-6 py-4">
+
+                                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">Active</span>                                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">Active</span>
+
+                                </td>                                </td>
+
+                                <td class="px-6 py-4">                                <td class="px-6 py-4">
+
+                                    <button class="text-sm text-gray-400 hover:text-white transition">View</button>                                    <button class="text-sm text-gray-400 hover:text-white transition">View</button>
+
+                                </td>                                </td>
+
+                            </tr>                            </tr>
+
+                            <tr>                            <tr>
+
+                                <td class="px-6 py-4">                                <td class="px-6 py-4">
+
+                                    <div class="flex items-center gap-3">                                    <div class="flex items-center gap-3">
+
+                                        <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-semibold">AS</div>                                        <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-semibold">AS</div>
+
+                                        <span class="font-medium">Alice Smith</span>                                        <span class="font-medium">Alice Smith</span>
+
+                                    </div>                                    </div>
+
+                                </td>                                </td>
+
+                                <td class="px-6 py-4 text-gray-400">alice@example.com</td>                                <td class="px-6 py-4 text-gray-400">alice@example.com</td>
+
+                                <td class="px-6 py-4 text-gray-400">18</td>                                <td class="px-6 py-4 text-gray-400">18</td>
+
+                                <td class="px-6 py-4">                                <td class="px-6 py-4">
+
+                                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">Active</span>                                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">Active</span>
+
+                                </td>                                </td>
+
+                                <td class="px-6 py-4">                                <td class="px-6 py-4">
+
+                                    <button class="text-sm text-gray-400 hover:text-white transition">View</button>                                    <button class="text-sm text-gray-400 hover:text-white transition">View</button>
+
+                                </td>                                </td>
+
+                            </tr>                            </tr>
+
+                        </tbody>                        </tbody>
+
+                    </table>                    </table>
+
+                </div>                </div>
+
+            </div>            </div>
+
+        </div>        </div>
+
+
+
+        <!-- Analytics Tab -->        <!-- Analytics Tab -->
+
+        <div id="analytics-content" class="tab-content hidden">        <div id="analytics-content" class="tab-content hidden">
+
+            <h2 class="text-2xl font-bold mb-8">Analytics & Reports</h2>            <h2 class="text-2xl font-bold mb-8">Analytics & Reports</h2>
+
+                        
+
+            <div class="grid lg:grid-cols-2 gap-6">            <div class="grid lg:grid-cols-2 gap-6">
+
+                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+
+                    <h3 class="text-lg font-semibold mb-6">Top Performing Events</h3>                    <h3 class="text-lg font-semibold mb-6">Top Performing Events</h3>
+
+                    <div class="space-y-4">                    <div class="space-y-4">
+
+                        @foreach($recentEvents as $index => $event)                        @foreach($recentEvents as $index => $event)
+
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+
+                            <div>                            <div>
+
+                                <div class="font-medium mb-1">{{ $event['title'] }}</div>                                <div class="font-medium mb-1">{{ $event['title'] }}</div>
+
+                                <div class="text-sm text-gray-400">${{ number_format($event['revenue']) }} revenue</div>                                <div class="text-sm text-gray-400">${{ number_format($event['revenue']) }} revenue</div>
+
+                            </div>                            </div>
+
+                            <div class="text-2xl font-bold text-gray-500">#{{ $index + 1 }}</div>                            <div class="text-2xl font-bold text-gray-500">#{{ $index + 1 }}</div>
+
+                        </div>                        </div>
+
+                        @endforeach                        @endforeach
+
+                    </div>                    </div>
+
+                </div>                </div>
+
+
+
+                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+
+                    <h3 class="text-lg font-semibold mb-6">Revenue Chart</h3>                    <h3 class="text-lg font-semibold mb-6">Revenue Chart</h3>
+
+                    <div class="h-64 flex items-center justify-center bg-white/5 rounded-xl">                    <div class="h-64 flex items-center justify-center bg-white/5 rounded-xl">
+
+                        <div class="text-center text-gray-400">                        <div class="text-center text-gray-400">
+
+                            <div class="text-4xl mb-2">📊</div>                            <div class="text-4xl mb-2">📊</div>
+
+                            <p class="text-sm">Chart visualization</p>                            <p class="text-sm">Chart visualization</p>
+
+                            <p class="text-xs text-gray-500">(Will be connected to analytics later)</p>                            <p class="text-xs text-gray-500">(Will be connected to analytics later)</p>
+
+                        </div>                        </div>
+
+                    </div>                    </div>
+
+                </div>                </div>
+
+            </div>            </div>
+
+        </div>        </div>
+
+
+
+        <!-- Settings Tab -->        <!-- Settings Tab -->
+
+        <div id="settings-content" class="tab-content hidden">        <div id="settings-content" class="tab-content hidden">
+
+            <h2 class="text-2xl font-bold mb-8">CMS Settings</h2>            <h2 class="text-2xl font-bold mb-8">CMS Settings</h2>
+
+                        
+
+            <div class="max-w-2xl">            <div class="max-w-2xl">
+
+                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+
+                    <h3 class="text-lg font-semibold mb-6">General Settings</h3>                    <h3 class="text-lg font-semibold mb-6">General Settings</h3>
+
+                    <form class="space-y-6">                    <form class="space-y-6">
+
+                        <div>                        <div>
+
+                            <label class="block text-sm text-gray-400 mb-2">Site Name</label>                            <label class="block text-sm text-gray-400 mb-2">Site Name</label>
+
+                            <input type="text" value="Event Manager"                            <input type="text" value="Event Manager"
+
+                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+
+                        </div>                        </div>
+
+                        <div>                        <div>
+
+                            <label class="block text-sm text-gray-400 mb-2">Contact Email</label>                            <label class="block text-sm text-gray-400 mb-2">Contact Email</label>
+
+                            <input type="email" value="admin@eventmanager.com"                            <input type="email" value="admin@eventmanager.com"
+
+                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+
+                        </div>                        </div>
+
+                        <div>                        <div>
+
+                            <label class="block text-sm text-gray-400 mb-2">Default Event Capacity</label>                            <label class="block text-sm text-gray-400 mb-2">Default Event Capacity</label>
+
+                            <input type="number" value="1000"                            <input type="number" value="1000"
+
+                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+
+                        </div>                        </div>
+
+                        <div class="flex justify-end">                        <div class="flex justify-end">
+
+                            <button type="submit" class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">                            <button type="submit" class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
+
+                                Save Settings                                Save Settings
+
+                            </button>                            </button>
+
+                        </div>                        </div>
+
+                    </form>                    </form>
+
+                </div>                </div>
+
+            </div>            </div>
+
+        </div>        </div>
+
+
+
+    </div>    </div>
+
+</div></div>
+
+
+
+<style><style>
+
+    .scrollbar-hide::-webkit-scrollbar {    .scrollbar-hide::-webkit-scrollbar {
+
+        display: none;        display: none;
+
+    }    }
+
+        
+
+    .scrollbar-hide {    .scrollbar-hide {
+
+        -ms-overflow-style: none;        -ms-overflow-style: none;
+
+        scrollbar-width: none;        scrollbar-width: none;
+
+    }    }
+
+</style></style>
+
+
+
+<script><script>
+
+    function showTab(tabName) {    function showTab(tabName) {
+
+        // Hide all tab contents        // Hide all tab contents
+
+        document.querySelectorAll('.tab-content').forEach(content => {        document.querySelectorAll('.tab-content').forEach(content => {
+
+            content.classList.add('hidden');            content.classList.add('hidden');
+
+        });        });
+
+
+
+        // Show selected tab content        // Show selected tab content
+
+        document.getElementById(tabName + '-content').classList.remove('hidden');        document.getElementById(tabName + '-content').classList.remove('hidden');
+
+
+
+        // Update tab button styling        // Update tab button styling
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {        document.querySelectorAll('.tab-btn').forEach(btn => {
+
+            btn.classList.remove('active', 'bg-white', 'text-black', 'font-semibold');            btn.classList.remove('active', 'bg-white', 'text-black', 'font-semibold');
+
+            btn.classList.add('bg-white/5', 'text-white', 'font-medium', 'border', 'border-white/10');            btn.classList.add('bg-white/5', 'text-white', 'font-medium', 'border', 'border-white/10');
+
+        });        });
+
+
+
+        // Add active styles to selected tab        // Add active styles to selected tab
+
+        const activeTab = document.getElementById(tabName + '-tab');        const activeTab = document.getElementById(tabName + '-tab');
+
+        activeTab.classList.remove('bg-white/5', 'text-white', 'font-medium', 'border', 'border-white/10');        activeTab.classList.remove('bg-white/5', 'text-white', 'font-medium', 'border', 'border-white/10');
+
+        activeTab.classList.add('active', 'bg-white', 'text-black', 'font-semibold');        activeTab.classList.add('active', 'bg-white', 'text-black', 'font-semibold');
+
+    }    }
+
+
+
+    function toggleCreateForm() {    function toggleCreateForm() {
+
+        const form = document.getElementById('createEventForm');        const form = document.getElementById('createEventForm');
+
+        form.classList.toggle('hidden');        form.classList.toggle('hidden');
+
+    }    }
+
+
+
+    // Initialize forms to show placeholder alert on submit    // Initialize forms to show placeholder alert on submit
+
+    document.addEventListener('DOMContentLoaded', function() {    document.addEventListener('DOMContentLoaded', function() {
+
+        const forms = document.querySelectorAll('form');        const forms = document.querySelectorAll('form');
+
+        forms.forEach(form => {        forms.forEach(form => {
+
+            form.addEventListener('submit', function(e) {            form.addEventListener('submit', function(e) {
+
+                e.preventDefault();                e.preventDefault();
+
+                alert('✅ Form submitted! This functionality will be connected to the database later.');                alert('This functionality will be connected to the database later!');
+
+            });            });
+
+        });        });
+
+    });    });
+
+</script></script>
+
+@endsection@endsection
+
     <div class="min-h-screen">
         <!-- Header -->
         <header class="bg-white shadow-sm border-b border-gray-200">
