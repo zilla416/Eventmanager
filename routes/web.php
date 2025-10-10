@@ -111,50 +111,9 @@ Route::get('/account/settings', function () {
     return view('account-settings');
 })->name('account.settings');
 
+use App\Http\Controllers\CmsController;
 // CMS Dashboard for Event Organizers and Admins
-Route::get('/admin/cms', function () {
-    // Mock data for the CMS dashboard
-    $totalEvents = 25;
-    $totalUsers = 1250;
-    $totalTicketsSold = 8540;
-    $totalRevenue = 425000;
-
-    // Recent events data
-    $recentEvents = [
-        [
-            'id' => 1,
-            'title' => 'Summer Music Festival 2025',
-            'date' => '2025-07-15',
-            'location' => 'Central Park, NY',
-            'tickets_sold' => 1500,
-            'capacity' => 2000,
-            'status' => 'active',
-            'revenue' => 75000
-        ],
-        [
-            'id' => 2,
-            'title' => 'Tech Innovation Summit',
-            'date' => '2025-06-22',
-            'location' => 'Convention Center, SF',
-            'tickets_sold' => 850,
-            'capacity' => 1000,
-            'status' => 'active',
-            'revenue' => 42500
-        ],
-        [
-            'id' => 3,
-            'title' => 'Basketball Championship',
-            'date' => '2025-05-18',
-            'location' => 'Sports Arena, LA',
-            'tickets_sold' => 2200,
-            'capacity' => 2200,
-            'status' => 'sold_out',
-            'revenue' => 110000
-        ]
-    ];
-
-    return view('cms', compact('totalEvents', 'totalUsers', 'totalTicketsSold', 'totalRevenue', 'recentEvents'));
-})->name('admin.cms');
+Route::get('/admin/cms', [CmsController::class, 'index'])->name('admin.cms');
 
 // Organizer CMS Dashboard - Limited functionality for event organizers
 Route::get('/organizer/cms', function () {
