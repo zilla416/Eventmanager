@@ -27,36 +27,36 @@
             <!-- Contact Form -->
             <div class="bg-white/5 rounded-2xl p-8 border border-white/10">
                 <h2 class="text-2xl font-bold mb-6">Send us a message</h2>
-                <form class="space-y-5">
+                <form class="space-y-5" id="contactForm">
                     <div>
                         <label class="block text-sm font-medium mb-2">Name</label>
-                        <input type="text" 
+                        <input type="text" id="contactName" required
                                class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 
                                       focus:outline-none focus:border-white/20 transition"
                                placeholder="Your name">
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-2">Email</label>
-                        <input type="email" 
+                        <input type="email" id="contactEmail" required
                                class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 
                                       focus:outline-none focus:border-white/20 transition"
                                placeholder="your@email.com">
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-2">Subject</label>
-                        <input type="text" 
+                        <input type="text" id="contactSubject" required
                                class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 
                                       focus:outline-none focus:border-white/20 transition"
                                placeholder="How can we help?">
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-2">Message</label>
-                        <textarea rows="5"
+                        <textarea rows="5" id="contactMessage" required
                                   class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 
                                          focus:outline-none focus:border-white/20 transition resize-none"
                                   placeholder="Your message..."></textarea>
                     </div>
-                    <button type="submit" 
+                    <button type="submit" id="contactSubmitBtn"
                             class="w-full px-6 py-4 bg-white text-black rounded-full font-semibold 
                                    hover:bg-gray-200 transition-all duration-200">
                         Send Message
@@ -138,4 +138,41 @@
 
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactForm = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('contactSubmitBtn');
+        
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value;
+            
+            // Validate
+            if (!name || !email || !subject || !message) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            // Simulate sending (placeholder)
+            setTimeout(() => {
+                alert('✉️ Message sent successfully! We\'ll get back to you soon.\n\n(This will be connected to the email system later)');
+                
+                // Reset form
+                contactForm.reset();
+                submitBtn.textContent = 'Send Message';
+                submitBtn.disabled = false;
+            }, 1000);
+        });
+    });
+</script>
 @endsection

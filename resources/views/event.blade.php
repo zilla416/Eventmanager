@@ -98,19 +98,19 @@
                         <div class="mb-6">
                             <label class="text-sm font-medium mb-3 block">Tickets</label>
                             <div class="flex items-center justify-between bg-gray-100 rounded-xl p-2">
-                                <button class="w-10 h-10 flex items-center justify-center hover:bg-gray-200 rounded-lg transition">−</button>
-                                <span class="font-medium">1</span>
-                                <button class="w-10 h-10 flex items-center justify-center hover:bg-gray-200 rounded-lg transition">+</button>
+                                <button id="decreaseBtn" class="w-10 h-10 flex items-center justify-center hover:bg-gray-200 rounded-lg transition">−</button>
+                                <span id="quantityDisplay" class="font-medium">1</span>
+                                <button id="increaseBtn" class="w-10 h-10 flex items-center justify-center hover:bg-gray-200 rounded-lg transition">+</button>
                             </div>
                         </div>
 
                         <!-- CTA -->
-                        <button class="w-full bg-black text-white py-4 rounded-xl font-medium hover:bg-gray-900 transition mb-4">
+                        <a href="{{ route('checkout') }}" id="reserveBtn" class="block w-full bg-black text-white py-4 rounded-xl font-medium hover:bg-gray-900 transition mb-4 text-center">
                             Reserve
-                        </button>
+                        </a>
 
                         <div class="text-center text-xs text-gray-500">
-                            17,000 spots available
+                            <span id="spotsAvailable">17,000</span> spots available
                         </div>
                     </div>
 
@@ -149,4 +149,51 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let quantity = 1;
+        const maxQuantity = 10;
+        const minQuantity = 1;
+        const pricePerTicket = 89.50;
+        
+        const decreaseBtn = document.getElementById('decreaseBtn');
+        const increaseBtn = document.getElementById('increaseBtn');
+        const quantityDisplay = document.getElementById('quantityDisplay');
+        const reserveBtn = document.getElementById('reserveBtn');
+        
+        function updateQuantity() {
+            quantityDisplay.textContent = quantity;
+            
+            // Update button states
+            decreaseBtn.style.opacity = quantity <= minQuantity ? '0.5' : '1';
+            decreaseBtn.style.cursor = quantity <= minQuantity ? 'not-allowed' : 'pointer';
+            increaseBtn.style.opacity = quantity >= maxQuantity ? '0.5' : '1';
+            increaseBtn.style.cursor = quantity >= maxQuantity ? 'not-allowed' : 'pointer';
+            
+            // Update reserve button link with quantity and price
+            const baseUrl = reserveBtn.href.split('?')[0];
+            reserveBtn.href = `${baseUrl}?quantity=${quantity}&price=${pricePerTicket}`;
+        }
+        
+        decreaseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (quantity > minQuantity) {
+                quantity--;
+                updateQuantity();
+            }
+        });
+        
+        increaseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (quantity < maxQuantity) {
+                quantity++;
+                updateQuantity();
+            }
+        });
+        
+        // Initialize
+        updateQuantity();
+    });
+</script>
 @endsection

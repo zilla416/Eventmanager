@@ -25,6 +25,11 @@ Route::get('/event', function () {
     return view('event', compact('event'));
 })->name('eventpage');
 
+// Checkout page
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');
+
 // Account page
 Route::get('/account', function () {
     // Hardcoded events list matching database structure (will be replaced with database fetch in the future)
