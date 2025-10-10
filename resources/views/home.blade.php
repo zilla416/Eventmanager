@@ -129,8 +129,27 @@
         </div>
 
         @if($event)
+        <!-- No Results Message (hidden by default) -->
+        <div id="noResultsMessage" class="text-center py-32 hidden">
+            <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10">
+                <svg class="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">No events found</h3>
+            <p class="text-gray-400 text-lg mb-6">We couldn't find any events matching "<span id="searchTermDisplay" class="text-white font-semibold"></span>"</p>
+            <div class="flex gap-4 justify-center">
+                <button id="clearSearchBtn" class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-all duration-200">
+                    Clear Search
+                </button>
+                <button onclick="document.getElementById('eventSearch').focus()" class="px-8 py-3 border border-white/20 rounded-full hover:bg-white/5 transition-all duration-200 font-medium">
+                    Try Different Keywords
+                </button>
+            </div>
+        </div>
+
         <!-- Events Grid -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div id="eventsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             @for ($i = 0; $i < 6; $i++)
             <a href="{{ route('eventpage') }}" class="event-card group block" data-category="music">
                 <div class="bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 h-full hover:transform hover:scale-[1.02]">
@@ -266,16 +285,35 @@
         
         function filterEventsBySearch(searchTerm) {
             const term = searchTerm.toLowerCase();
+            let visibleCount = 0;
+            
             eventCards.forEach(card => {
                 const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
                 const description = card.querySelector('.line-clamp-2')?.textContent.toLowerCase() || '';
                 
                 if (title.includes(term) || description.includes(term)) {
                     card.style.display = 'block';
+                    visibleCount++;
                 } else {
                     card.style.display = 'none';
                 }
             });
+            
+            // Show/hide no results message
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            const eventsGrid = document.getElementById('eventsGrid');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            
+            if (visibleCount === 0) {
+                noResultsMessage.classList.remove('hidden');
+                eventsGrid.classList.add('hidden');
+                if (loadMoreBtn) loadMoreBtn.parentElement.classList.add('hidden');
+                document.getElementById('searchTermDisplay').textContent = searchTerm;
+            } else {
+                noResultsMessage.classList.add('hidden');
+                eventsGrid.classList.remove('hidden');
+                if (loadMoreBtn) loadMoreBtn.parentElement.classList.remove('hidden');
+            }
             
             filterButtons.forEach(btn => {
                 if (btn.dataset.category === 'all') {
@@ -299,13 +337,27 @@
                 this.classList.add('active', 'bg-white', 'text-black', 'font-semibold');
                 this.classList.remove('bg-white/5', 'text-white', 'font-medium');
                 
+                let visibleCount = 0;
                 eventCards.forEach(card => {
                     if (category === 'all' || card.dataset.category === category) {
                         card.style.display = 'block';
+                        visibleCount++;
                     } else {
                         card.style.display = 'none';
                     }
                 });
+                
+                // Hide no results message when filtering by category
+                const noResultsMessage = document.getElementById('noResultsMessage');
+                const eventsGrid = document.getElementById('eventsGrid');
+                noResultsMessage.classList.add('hidden');
+                eventsGrid.classList.remove('hidden');
+                
+                // Clear search input
+                const eventSearchInput = document.getElementById('eventSearch');
+                if (eventSearchInput) {
+                    eventSearchInput.value = '';
+                }
             });
         });
 
@@ -350,6 +402,49 @@
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', function() {
                 alert('Loading more events... (This will be connected to the database later)');
+            });
+        }
+
+        // Clear Search Button
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', function() {
+                // Clear search input
+                const eventSearchInput = document.getElementById('eventSearch');
+                if (eventSearchInput) {
+                    eventSearchInput.value = '';
+                }
+                
+                // Show all events
+                eventCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                
+                // Hide no results message
+                const noResultsMessage = document.getElementById('noResultsMessage');
+                const eventsGrid = document.getElementById('eventsGrid');
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
+                
+                noResultsMessage.classList.add('hidden');
+                eventsGrid.classList.remove('hidden');
+                if (loadMoreBtn) loadMoreBtn.parentElement.classList.remove('hidden');
+                
+                // Reset to "All Events" filter
+                filterButtons.forEach(btn => {
+                    if (btn.dataset.category === 'all') {
+                        btn.classList.add('active', 'bg-white', 'text-black', 'font-semibold');
+                        btn.classList.remove('bg-white/5', 'text-white', 'font-medium');
+                    } else {
+                        btn.classList.remove('active', 'bg-white', 'text-black', 'font-semibold');
+                        btn.classList.add('bg-white/5', 'text-white', 'font-medium');
+                    }
+                });
+                
+                // Scroll back to events section
+                const eventsSection = document.getElementById('events-section');
+                if (eventsSection) {
+                    eventsSection.scrollIntoView({ behavior: 'smooth' });
+                }
             });
         }
     });
