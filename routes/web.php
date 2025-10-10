@@ -19,6 +19,12 @@ Route::get('/', function () {
     return view('home', compact('event'));
 })->name('homepage');
 
+Route::get('/event', function () {
+    $event = Event::first(); // just grabs the first event in DB
+
+    return view('event', compact('event'));
+})->name('eventpage');
+
 // Account page
 Route::get('/account', function () {
     // Hardcoded events list matching database structure (will be replaced with database fetch in the future)
