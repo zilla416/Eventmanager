@@ -1,15 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AuthController;
 use App\Models\Event;
-
-
-// Homepage
-Route::get('/', function () {
-    return view('home');
-})->name('homepage');
+use Illuminate\Support\Facades\Route;
 
 // Login (GET shows form, POST handles login)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('loginpage');
@@ -21,5 +15,12 @@ Route::post('/register', [RegisterController::class, 'register']);
 
 Route::get('/', function () {
     $event = Event::first(); // just grabs the first event in DB
+
     return view('home', compact('event'));
 })->name('homepage');
+
+Route::get('/event', function () {
+    $event = Event::first();
+
+    return view('event', compact('event'));
+})->name('eventpage');

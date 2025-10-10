@@ -22,20 +22,23 @@
             </div>
             @if($event)
                 <div class="flex flex-row flex-wrap gap-4">
-                    <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
-                        <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
-                            class="w-full rounded-tl-xl rounded-tr-xl">
-                        <div id="event-content" class="px-4">
-                            <p class="font-semibold text-xl">{{ $event->title }}</p>
-                            {{-- <p><strong>Location:</strong> {{ $event->location }}</p> --}}
-                            {{-- <p><strong>Adress:</strong> {{ $event->adress }}</p>
-                            <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($event->date)->translatedFormat('d F Y') }}</p>
-                            <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</p>
-                            <p><strong>Price:</strong> €--</p>
-                            <p class="mt-4">{{ $event->description }}</p> --}}
-                            {{-- <p><strong>Availability:</strong> {{ $event->available_spots }}</p> --}}
+                    <a href="{{ route('eventpage') }}">
+                        <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
+                            <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
+                                class="w-full rounded-tl-xl rounded-tr-xl">
+                            <div id="event-content" class="px-4">
+                                <p class="font-semibold text-xl">{{ $event->title }}</p>
+                                {{-- <p><strong>Location:</strong> {{ $event->location }}</p> --}}
+                                {{-- <p><strong>Adress:</strong> {{ $event->adress }}</p>
+                                <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($event->date)->translatedFormat('d F Y') }}
+                                </p>
+                                <p><strong>Time:</strong> {{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</p>
+                                <p><strong>Price:</strong> €--</p>
+                                <p class="mt-4">{{ $event->description }}</p> --}}
+                                {{-- <p><strong>Availability:</strong> {{ $event->available_spots }}</p> --}}
+                            </div>
                         </div>
-                    </div>
+                    </a>
                     <div class="border border-gray-200 shadow-sm rounded-xl w-3/10 h-100 mx-auto">
                         <img src="{{ Vite::asset($event->image) }}" alt="{{ $event->title }}"
                             class="w-full rounded-tl-xl rounded-tr-xl">

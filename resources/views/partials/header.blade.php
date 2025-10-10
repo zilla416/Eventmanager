@@ -1,6 +1,6 @@
 <header class="flex flex-col">
     <div class="pt-6 pb-3 flex flex-row justify-between items-center border-b border-gray-200">
-        <h1 class="text-blue-600 font-bold text-3xl">EventManager</h1>
+        <a href="{{ route('homepage') }}"><h1 class="text-blue-600 font-bold text-3xl">EventManager</h1></a>
         <div onmousedown="event.preventDefault()" onclick="document.getElementById('search-input').focus();" class="flex flew-row items-center gap-3 border border-gray-300 rounded-lg text-md pl-4 pr-10 py-2 w-2xl">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6 text-gray-400">
