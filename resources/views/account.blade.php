@@ -151,7 +151,7 @@
                         <!-- Profile Information Section -->
                         <div class="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
                             <h3 class="text-lg font-semibold mb-4">Profile Information</h3>
-                            
+
                             @if($errors->any() && !$errors->has('current_password') && !$errors->has('new_password'))
                             <div class="mb-4 bg-red-500/20 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
                                 <ul class="list-disc list-inside">
@@ -189,7 +189,7 @@
                         <!-- Password Change Section -->
                         <div class="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
                             <h3 class="text-lg font-semibold mb-4">Change Password</h3>
-                            
+
                             @if($errors->has('current_password') || $errors->has('new_password'))
                             <div class="mb-4 bg-red-500/20 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
                                 <ul class="list-disc list-inside">
@@ -313,22 +313,22 @@
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = '{{ route("account.delete") }}';
-                    
+
                     const csrfToken = document.createElement('input');
                     csrfToken.type = 'hidden';
                     csrfToken.name = '_token';
                     csrfToken.value = '{{ csrf_token() }}';
-                    
+
                     const methodField = document.createElement('input');
                     methodField.type = 'hidden';
                     methodField.name = '_method';
                     methodField.value = 'DELETE';
-                    
+
                     const passwordField = document.createElement('input');
                     passwordField.type = 'hidden';
                     passwordField.name = 'password';
                     passwordField.value = password;
-                    
+
                     form.appendChild(csrfToken);
                     form.appendChild(methodField);
                     form.appendChild(passwordField);
