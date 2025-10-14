@@ -37,7 +37,11 @@ class CmsController extends Controller
             ];
         })->toArray();
 
-        return view('cms', compact('totalEvents', 'totalUsers', 'totalTicketsSold', 'totalRevenue', 'recentEvents'));
+        // Get customers (is_admin = 0) and organizers (is_admin = 1)
+        $customers = User::where('is_admin', 0)->orderBy('created_at', 'desc')->get();
+        $organizers = User::where('is_admin', 1)->orderBy('created_at', 'desc')->get();
+
+        return view('cms', compact('totalEvents', 'totalUsers', 'totalTicketsSold', 'totalRevenue', 'recentEvents', 'customers', 'organizers'));
     }
 
     public function store(Request $request)
@@ -125,6 +129,52 @@ class CmsController extends Controller
     {
         $event = Event::findOrFail($id);
         $event->delete();
-    return redirect()->back()->with('success', 'Event deleted');
+        return redirect()->back()->with('success', 'Event deleted');
+    }
+
+    public function promoteUser($id)
+    {
+        $user = User::findOrFail($id);
+        
+        // Promote customer (0) to organizer (1)
+        if ($user->is_admin == 0) {
+            $user->is_admin = 1;
+            $user->save();
+            return redirect()->back()->with('success', $user->name . ' has been promoted to Organizer');
+        }
+        
+        return redirect()->back()->with('error', 'User cannot be promoted');
+    }
+
+    public function demoteUser($id)
+    {
+        $user = User::findOrFail($id);
+        
+        // Demote organizer (1) to customer (0)
+        if ($user->is_admin == 1) {
+            $user->is_admin = 0;
+            $user->save();
+            return redirect()->back()->with('success', $user->name . ' has been demoted to Customer');
+        }
+        
+        return redirect()->back()->with('error', 'User cannot be demoted');
+    }
+
+    public function createOrganizer(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+            'is_admin' => 1, // Set as organizer
+        ]);
+
+        return redirect()->back()->with('success', 'Organizer ' . $user->name . ' has been created successfully');
     }
 }

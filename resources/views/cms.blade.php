@@ -17,7 +17,7 @@
                     <h1 class="text-3xl font-bold mb-1">Admin Dashboard</h1>
                     <p class="text-gray-400">Manage your events and platform</p>
                 </div>
-                <a href="/"
+                <a href="{{ route('homepage') }}"
                     class="px-4 py-2 border border-white/20 rounded-full text-sm hover:bg-white/5 transition">Back to
                     Site</a>
             </div>
@@ -182,50 +182,147 @@
         </div>
 
         <div id="content-users" class="hidden">
-            <h2 class="text-2xl font-bold mb-6">User Management</h2>
-            <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-white/10">
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">User</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Email</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Events</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/10">
-                        <tr>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-semibold">
-                                        JD</div>
-                                    <span>John Doe</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-gray-400">john@example.com</td>
-                            <td class="px-6 py-4 text-gray-400">24</td>
-                            <td class="px-6 py-4"><span
-                                    class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">Active</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-semibold">
-                                        AS</div>
-                                    <span>Alice Smith</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-gray-400">alice@example.com</td>
-                            <td class="px-6 py-4 text-gray-400">18</td>
-                            <td class="px-6 py-4"><span
-                                    class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">Active</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">User Management</h2>
+                <button onclick="toggleOrganizerForm()"
+                    class="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">+
+                    Create Organizer</button>
+            </div>
+
+            <!-- Create Organizer Form -->
+            <div id="organizerForm" class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-6 hidden">
+                <h3 class="text-xl font-semibold mb-4">Create New Organizer</h3>
+                <form method="POST" action="{{ route('admin.users.create-organizer') }}" class="space-y-4">
+                    @csrf
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Full Name</label>
+                            <input type="text" name="name" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Email</label>
+                            <input type="email" name="email" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm text-gray-400 mb-2">Password</label>
+                            <input type="password" name="password" required minlength="8"
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                            <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="submit"
+                            class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200">Create Organizer</button>
+                        <button type="button" onclick="toggleOrganizerForm()"
+                            class="px-8 py-3 border border-white/20 rounded-full hover:bg-white/5">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Organizers Section -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <span>Organizers</span>
+                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-semibold">{{ count($organizers) }}</span>
+                </h3>
+                <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-white/10">
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">User</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Email</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Joined</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Role</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10">
+                            @forelse($organizers as $organizer)
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">
+                                            {{ strtoupper(substr($organizer->name, 0, 2)) }}
+                                        </div>
+                                        <span>{{ $organizer->name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-gray-400">{{ $organizer->email }}</td>
+                                <td class="px-6 py-4 text-gray-400">{{ $organizer->created_at ? $organizer->created_at->format('M d, Y') : 'N/A' }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-semibold">Organizer</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <form method="POST" action="{{ route('admin.users.demote', $organizer->id) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-4 py-2 bg-orange-500/20 text-orange-400 rounded-lg text-xs font-semibold hover:bg-orange-500/30 transition">
+                                            Demote to Customer
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-400">No organizers found</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customers Section -->
+            <div>
+                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <span>Customers</span>
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold">{{ count($customers) }}</span>
+                </h3>
+                <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-white/10">
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">User</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Email</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Joined</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Role</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10">
+                            @forelse($customers as $customer)
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center font-semibold text-sm">
+                                            {{ strtoupper(substr($customer->name, 0, 2)) }}
+                                        </div>
+                                        <span>{{ $customer->name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-gray-400">{{ $customer->email }}</td>
+                                <td class="px-6 py-4 text-gray-400">{{ $customer->created_at ? $customer->created_at->format('M d, Y') : 'N/A' }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold">Customer</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <form method="POST" action="{{ route('admin.users.promote', $customer->id) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg text-xs font-semibold hover:bg-green-500/30 transition">
+                                            Promote to Organizer
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-400">No customers found</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -303,6 +400,15 @@
             form.classList.toggle('hidden');
             if (!form.classList.contains('hidden')) {
                 document.getElementById('title').focus();
+            }
+        }
+
+        // Toggle create organizer form
+        function toggleOrganizerForm() {
+            const form = document.getElementById('organizerForm');
+            form.classList.toggle('hidden');
+            if (!form.classList.contains('hidden')) {
+                form.querySelector('input[name="name"]').focus();
             }
         }
 
