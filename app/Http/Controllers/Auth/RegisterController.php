@@ -31,6 +31,6 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('views.home'); // change to your home route
+        return redirect()->route('home'); // change to your home route
     }
 }
