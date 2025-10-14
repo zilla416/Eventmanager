@@ -238,6 +238,7 @@
     </div>
 
     <script>
+        // Tab switching
         function showTab(tab) {
             document.querySelectorAll('[id^="content-"]').forEach(el => el.classList.add('hidden'));
             document.getElementById('content-' + tab).classList.remove('hidden');
@@ -249,24 +250,44 @@
             document.getElementById('tab-' + tab).classList.add('bg-white', 'text-black', 'font-semibold');
         }
 
+        // Toggle create event form
         function toggleForm() {
-            document.getElementById('eventForm').classList.toggle('hidden');
+            const form = document.getElementById('eventForm');
+            form.classList.toggle('hidden');
+            if (!form.classList.contains('hidden')) {
+                document.getElementById('title').focus();
+            }
         }
 
+        // Handle create event form submission
         function handleCreateEvent(e) {
             e.preventDefault();
             const title = document.getElementById('title').value;
             const date = document.getElementById('date').value;
             const location = document.getElementById('location').value;
             const capacity = document.getElementById('capacity').value;
-            alert('Event created!\n\nTitle: ' + title + '\nDate: ' + date + '\nLocation: ' + location + '\nCapacity: ' + capacity);
+            
+            alert('✅ Event Created Successfully!\n\n' + 
+                  'Title: ' + title + '\n' +
+                  'Date: ' + date + '\n' +
+                  'Location: ' + location + '\n' +
+                  'Capacity: ' + capacity + '\n\n' +
+                  'This will be connected to the database later.');
+            
             e.target.reset();
             toggleForm();
         }
 
+        // Handle settings form submission
         function handleSettings(e) {
             e.preventDefault();
-            alert('Settings saved successfully!');
+            const siteName = e.target.querySelector('input[type="text"]').value;
+            const email = e.target.querySelector('input[type="email"]').value;
+            
+            alert('✅ Settings Saved Successfully!\n\n' +
+                  'Site Name: ' + siteName + '\n' +
+                  'Contact Email: ' + email + '\n\n' +
+                  'This will be connected to the database later.');
         }
     </script>
 
