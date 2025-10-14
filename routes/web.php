@@ -177,6 +177,13 @@ Route::get('/account/settings', function () {
     return view('account-settings');
 })->name('account.settings');
 
+// Account management routes
+Route::middleware('auth')->group(function () {
+    Route::post('/account/profile', [App\Http\Controllers\AccountController::class, 'updateProfile'])->name('account.profile.update');
+    Route::post('/account/password', [App\Http\Controllers\AccountController::class, 'updatePassword'])->name('account.password.update');
+    Route::delete('/account', [App\Http\Controllers\AccountController::class, 'deleteAccount'])->name('account.delete');
+});
+
 use App\Http\Controllers\CmsController;
 // CMS Dashboard for Event Organizers and Admins
 Route::get('/admin/cms', [CmsController::class, 'index'])->name('admin.cms');
