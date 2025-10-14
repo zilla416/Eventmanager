@@ -313,14 +313,14 @@
             const date = document.getElementById('date').value;
             const location = document.getElementById('location').value;
             const capacity = document.getElementById('capacity').value;
-            
-            alert('✅ Event Created Successfully!\n\n' + 
-                  'Title: ' + title + '\n' +
-                  'Date: ' + date + '\n' +
-                  'Location: ' + location + '\n' +
-                  'Capacity: ' + capacity + '\n\n' +
-                  'This will be connected to the database later.');
-            
+
+            alert('✅ Event Created Successfully!\n\n' +
+                'Title: ' + title + '\n' +
+                'Date: ' + date + '\n' +
+                'Location: ' + location + '\n' +
+                'Capacity: ' + capacity + '\n\n' +
+                'This will be connected to the database later.');
+
             e.target.reset();
             toggleForm();
         }
@@ -330,11 +330,11 @@
             e.preventDefault();
             const siteName = e.target.querySelector('input[type="text"]').value;
             const email = e.target.querySelector('input[type="email"]').value;
-            
+
             alert('✅ Settings Saved Successfully!\n\n' +
-                  'Site Name: ' + siteName + '\n' +
-                  'Contact Email: ' + email + '\n\n' +
-                  'This will be connected to the database later.');
+                'Site Name: ' + siteName + '\n' +
+                'Contact Email: ' + email + '\n\n' +
+                'This will be connected to the database later.');
         }
 
         // Wire edit buttons to prefill the form
