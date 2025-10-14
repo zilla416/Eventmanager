@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Hero Section -->
-<div class="relative min-h-screen overflow-hidden bg-black">
+<div class="relative min-h-[100svh] md:min-h-screen overflow-hidden bg-black">
     <!-- Background Image -->
     <div class="absolute inset-0">
         <img src="{{ Vite::asset('resources/img/concert1.png') }}" 
@@ -14,36 +14,36 @@
     </div>
 
     <!-- Hero Content -->
-    <div class="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-6 md:px-8">
-        <div class="max-w-5xl mx-auto space-y-8">
+    <div class="relative z-10 min-h-[100svh] md:min-h-screen flex flex-col justify-center items-center text-center px-4 md:px-8">
+        <div class="max-w-5xl mx-auto space-y-6 md:space-y-8">
             
             <!-- Main Heading -->
-            <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight">
+            <h1 class="text-4xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-tight">
                 Discover Your Next<br>Unforgettable Experience
             </h1>
             
             <!-- Subheading -->
-            <p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto">
+            <p class="text-lg md:text-2xl text-gray-300 max-w-2xl mx-auto">
                 Find and book tickets to the best events in your city
             </p>
 
             <!-- Search Bar -->
-            <div class="max-w-3xl mx-auto mt-12">
-                <div class="bg-white rounded-2xl p-3 shadow-2xl">
-                    <div class="flex flex-col md:flex-row gap-3">
+            <div class="max-w-3xl mx-auto mt-8 md:mt-12">
+                <div class="bg-white rounded-2xl p-2 md:p-3 shadow-2xl">
+                    <div class="flex flex-col md:flex-row gap-2 md:gap-3">
                         <div class="flex-1">
                             <input type="text" 
                                    id="eventSearch"
-                                   placeholder="Search events, artists, venues..." 
-                                   class="w-full px-6 py-4 bg-transparent text-black placeholder-gray-500 focus:outline-none text-lg">
+                                   placeholder="Search events..." 
+                                   class="w-full px-4 md:px-6 py-3 md:py-4 bg-transparent text-black placeholder-gray-500 focus:outline-none text-base md:text-lg">
                         </div>
                         <div class="flex-1">
                             <input type="text" 
                                    id="locationSearch"
                                    placeholder="Utrecht" 
-                                   class="w-full px-6 py-4 bg-transparent text-black placeholder-gray-500 focus:outline-none text-lg border-t md:border-t-0 md:border-l border-gray-200">
+                                   class="w-full px-4 md:px-6 py-3 md:py-4 bg-transparent text-black placeholder-gray-500 focus:outline-none text-base md:text-lg border-t md:border-t-0 md:border-l border-gray-200">
                         </div>
-                        <button id="heroSearchBtn" class="px-8 py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-900 transition-all duration-200 whitespace-nowrap">
+                        <button id="heroSearchBtn" class="px-6 md:px-8 py-3 md:py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-900 transition-all duration-200 whitespace-nowrap">
                             Search
                         </button>
                     </div>
@@ -51,48 +51,41 @@
             </div>
 
             <!-- Quick Categories -->
-            <div class="flex flex-wrap gap-3 justify-center mt-12">
-                <button data-quick-category="music" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+            <div class="flex flex-wrap gap-2 md:gap-3 justify-center mt-8 md:mt-12">
+                <button data-quick-category="music" class="px-4 md:px-6 py-2 md:py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200 text-sm md:text-base">
                     <span class="font-medium"> Music</span>
                 </button>
-                <button data-quick-category="sports" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                <button data-quick-category="sports" class="px-4 md:px-6 py-2 md:py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200 text-sm md:text-base">
                     <span class="font-medium"> Sports</span>
                 </button>
-                <button data-quick-category="theater" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                <button data-quick-category="theater" class="px-4 md:px-6 py-2 md:py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200 text-sm md:text-base">
                     <span class="font-medium"> Theater</span>
                 </button>
-                <button data-quick-category="comedy" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                <button data-quick-category="comedy" class="px-4 md:px-6 py-2 md:py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200 text-sm md:text-base">
                     <span class="font-medium"> Comedy</span>
                 </button>
-                <button data-quick-category="family" class="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200">
+                <button data-quick-category="family" class="px-4 md:px-6 py-2 md:py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200 text-sm md:text-base">
                     <span class="font-medium"> Family</span>
                 </button>
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-3 gap-8 max-w-3xl mx-auto mt-16">
+            <div class="grid grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto mt-12 md:mt-16">
                 <div class="text-center">
-                    <div class="text-3xl md:text-4xl font-bold mb-2">10K+</div>
-                    <div class="text-sm md:text-base text-gray-400">Events</div>
+                    <div class="text-2xl md:text-4xl font-bold mb-1 md:mb-2">10K+</div>
+                    <div class="text-xs md:text-base text-gray-400">Events</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl md:text-4xl font-bold mb-2">500K+</div>
-                    <div class="text-sm md:text-base text-gray-400">Happy Customers</div>
+                    <div class="text-2xl md:text-4xl font-bold mb-1 md:mb-2">500K+</div>
+                    <div class="text-xs md:text-base text-gray-400">Happy Customers</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl md:text-4xl font-bold mb-2">50+</div>
-                    <div class="text-sm md:text-base text-gray-400">Cities</div>
+                    <div class="text-2xl md:text-4xl font-bold mb-1 md:mb-2">50+</div>
+                    <div class="text-xs md:text-base text-gray-400">Cities</div>
                 </div>
             </div>
 
         </div>
-    </div>
-
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <svg class="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-        </svg>
     </div>
 </div>
 
@@ -237,11 +230,11 @@
                     Join thousands of organizers who trust EventManager to sell tickets and manage their events seamlessly
                 </p>
                 <div class="flex gap-4 justify-center flex-wrap">
-                    <a href="{{ route('about') }}" class="px-10 py-4 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-all duration-200">
+                    <a href="{{ route('loginpage') }}" class="px-10 py-4 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-all duration-200">
                         Get Started Free
                     </a>
-                    <a href="{{ route('contact') }}" class="px-10 py-4 border border-white/20 rounded-full hover:bg-white/5 transition-all duration-200 font-medium hover:border-white/30">
-                        See How It Works
+                    <a href="{{ route('about') }}" class="px-10 py-4 border border-white/20 rounded-full hover:bg-white/5 transition-all duration-200 font-medium hover:border-white/30">
+                        Learn More
                     </a>
                 </div>
             </div>
@@ -264,6 +257,22 @@
     document.addEventListener('DOMContentLoaded', function() {
         const filterButtons = document.querySelectorAll('.category-filter');
         const eventCards = document.querySelectorAll('.event-card');
+        
+        // Check for hash in URL (from header category links)
+        const hash = window.location.hash.substring(1);
+        if (hash && ['sports', 'music', 'theater', 'comedy', 'family'].includes(hash)) {
+            const eventsSection = document.getElementById('events-section');
+            if (eventsSection) {
+                setTimeout(() => {
+                    eventsSection.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+            
+            const filterButton = document.querySelector(`[data-category="${hash}"]`);
+            if (filterButton) {
+                setTimeout(() => filterButton.click(), 300);
+            }
+        }
         
         // Check for search parameter in URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -400,9 +409,37 @@
 
         const loadMoreBtn = document.getElementById('loadMoreBtn');
         if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', function() {
-                alert('Loading more events... (This will be connected to the database later)');
+            let currentlyShown = 12; // Initial number of events shown
+            const eventCardsArray = Array.from(eventCards);
+            
+            // Initially hide events beyond the first 12
+            eventCardsArray.forEach((card, index) => {
+                if (index >= 12) {
+                    card.classList.add('hidden-extra');
+                    card.style.display = 'none';
+                }
             });
+            
+            loadMoreBtn.addEventListener('click', function() {
+                const hiddenCards = eventCardsArray.filter(card => card.classList.contains('hidden-extra'));
+                const nextBatch = hiddenCards.slice(0, 6); // Show 6 more at a time
+                
+                nextBatch.forEach(card => {
+                    card.classList.remove('hidden-extra');
+                    card.style.display = 'block';
+                    currentlyShown++;
+                });
+                
+                // Hide button if all events are shown
+                if (currentlyShown >= eventCardsArray.length) {
+                    loadMoreBtn.parentElement.style.display = 'none';
+                }
+            });
+            
+            // Check if we need the button at all
+            if (eventCardsArray.length <= 12) {
+                loadMoreBtn.parentElement.style.display = 'none';
+            }
         }
 
         // Clear Search Button

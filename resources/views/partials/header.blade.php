@@ -49,19 +49,29 @@
         </div>
 
         <!-- Navigation -->
-        <nav class="flex items-center gap-1 py-2 text-sm border-t border-white/5 overflow-x-auto">
-            <a href="{{ route('homepage') }}#sports" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="sports">Sports</a>
-            <a href="{{ route('homepage') }}#music" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="music">Concerts</a>
-            <a href="{{ route('homepage') }}#theater" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="theater">Theater</a>
-            <a href="{{ route('homepage') }}#comedy" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="comedy">Comedy</a>
-            <a href="{{ route('homepage') }}#family" class="nav-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="family">Family</a>
+        <nav class="flex items-center gap-1 py-2 text-sm border-t border-white/5 overflow-x-auto scrollbar-hide">
+            <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="sports">Sports</a>
+            <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="music">Concerts</a>
+            <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="theater">Theater</a>
+            <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="comedy">Comedy</a>
+            <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="family">Family</a>
             <div class="flex-1"></div>
-            <a href="{{ route('admin.cms') }}" class="px-4 py-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition whitespace-nowrap font-medium">
+            <a href="{{ route('loginpage') }}" class="px-4 py-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition whitespace-nowrap font-medium">
                 Sell Tickets
             </a>
         </nav>
     </div>
 </header>
+
+<style>
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -72,14 +82,42 @@
                 if (e.key === 'Enter') {
                     const searchTerm = this.value;
                     if (searchTerm) {
-                        // Redirect to homepage with search parameter
                         window.location.href = `{{ route('homepage') }}?search=${encodeURIComponent(searchTerm)}`;
                     }
                 }
             });
         }
 
-        // Location Button (placeholder for future functionality)
+        // Header Category Links - Make them functional
+        const headerCategories = document.querySelectorAll('.header-category');
+        headerCategories.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const category = this.dataset.category;
+                const currentPage = window.location.pathname;
+                
+                // If already on homepage, trigger filter
+                if (currentPage === '/' || currentPage === '/home') {
+                    const eventsSection = document.getElementById('events-section');
+                    if (eventsSection) {
+                        eventsSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                    // Find and click the filter button
+                    setTimeout(() => {
+                        const filterButton = document.querySelector(`.category-filter[data-category="${category}"]`);
+                        if (filterButton) {
+                            filterButton.click();
+                        }
+                    }, 400);
+                } else {
+                    // Redirect to homepage with hash
+                    window.location.href = `{{ route('homepage') }}#${category}`;
+                }
+            });
+        });
+
+        // Location Button
         const locationBtn = document.getElementById('locationBtn');
         if (locationBtn) {
             locationBtn.addEventListener('click', function() {
@@ -90,7 +128,6 @@
                 }
             });
             
-            // Load saved location
             const savedLocation = localStorage.getItem('userLocation');
             if (savedLocation) {
                 document.getElementById('locationText').textContent = savedLocation;
