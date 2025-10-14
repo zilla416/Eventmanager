@@ -62,23 +62,49 @@ Route::get('/account-design', function () {
         ]
     ];
 
-    // Calculate stats
-    $totalSpent = 1240; // Will be calculated from actual purchases
-    $upcomingEventsCount = count($upcomingTickets);
-    $totalTickets = array_sum(array_column($upcomingTickets, 'tickets_count'));
-    $eventsAttended = count($pastEvents);
-    $memberSince = $user->created_at ? $user->created_at->format('M Y') : 'Jan 2025';
+        // Attempt to load real orders if orders table has been extended
+        $totalSpent = 0;
+        $upcomingEventsCount = count($upcomingTickets);
+        $totalTickets = array_sum(array_column($upcomingTickets, 'tickets_count'));
+        $eventsAttended = count($pastEvents);
+        $memberSince = $user->created_at ? $user->created_at->format('M Y') : 'Jan 2025';
 
-    return view('account-design', compact(
-        'user',
-        'upcomingTickets',
-        'pastEvents',
-        'totalSpent',
-        'upcomingEventsCount',
-        'totalTickets',
-        'eventsAttended',
-        'memberSince'
-    ));
+        try {
+            // Lazy-load orders only if columns exist
+            if (\Schema::hasTable('orders') && \Schema::hasColumn('orders', 'customer_id') && \Schema::hasColumn('orders', 'event_id')) {
+                $ordersQuery = App\Models\Order::where('customer_id', $user->id)->get();
+                $upcomingTickets = $ordersQuery->map(function($order) {
+                    // Try to load event info
+                    $event = App\Models\Event::find($order->event_id);
+                    return [
+                        'id' => $order->order_id,
+                        'ticket_id' => $order->order_id,
+                        'event_title' => $event ? $event->title : 'Unknown Event',
+                        'date' => $event ? strtoupper(date('M d, Y', strtotime($event->date))) : 'TBD',
+                        'time' => $event ? date('g:i A', strtotime($event->time)) : '',
+                        'location' => $event ? $event->location : '',
+                        'tickets_count' => $order->quantity ?? 1,
+                    ];
+                })->toArray();
+
+                $totalSpent = $ordersQuery->sum('total');
+                $upcomingEventsCount = count($upcomingTickets);
+                $totalTickets = $ordersQuery->sum('quantity');
+            }
+        } catch (\Exception $e) {
+            // If anything goes wrong, fall back to dummy data above
+        }
+
+        return view('account-design', compact(
+            'user',
+            'upcomingTickets',
+            'pastEvents',
+            'totalSpent',
+            'upcomingEventsCount',
+            'totalTickets',
+            'eventsAttended',
+            'memberSince'
+        ));
 })->name('account-designpage');
 Route::get('/home', function () {
     $event = Event::first(); // just grabs the first event in DB
@@ -97,6 +123,47 @@ Route::get('/event', function () {
 Route::get('/checkout', function () {
     return view('checkout');
 })->name('checkout');
+
+// Purchase endpoint: accepts event_id, quantity, total and creates an order for authenticated user
+Route::post('/purchase', function (Illuminate\Http\Request $request) {
+    if (!auth()->check()) {
+        return redirect()->route('loginpage')->with('error', 'Please login to complete purchase.');
+    }
+
+    $user = auth()->user();
+
+    $data = $request->validate([
+        'event_id' => 'required|integer|exists:events,event_id',
+        'quantity' => 'required|integer|min:1',
+        'total' => 'required|numeric|min:0',
+    ]);
+
+    // Ensure orders table has necessary columns
+    if (!\Schema::hasTable('orders') || !\Schema::hasColumn('orders', 'customer_id') || !\Schema::hasColumn('orders', 'event_id')) {
+        return back()->with('error', 'Order table is not configured to store purchases. Please run the migration to add order columns.');
+    }
+
+    // Create order
+    $order = App\Models\Order::create([
+        'order_date' => time(),
+        'customer_id' => $user->id,
+        'event_id' => $data['event_id'],
+        'quantity' => $data['quantity'],
+        'total' => $data['total'],
+        'status' => 'completed',
+    ]);
+
+    // Update event counts
+    $event = App\Models\Event::find($data['event_id']);
+    if ($event) {
+        $event->available_spots = max(0, ($event->available_spots ?? $event->max_spots ?? 0) - $data['quantity']);
+        $event->tickets_sold = ($event->tickets_sold ?? 0) + $data['quantity'];
+        $event->revenue = ($event->revenue ?? 0) + intval(round($data['total']));
+        $event->save();
+    }
+
+    return redirect()->route('account-designpage')->with('success', 'Purchase completed. Your tickets are in your account.');
+})->name('purchase');
 
 // Account page
 Route::get('/account', function () {
