@@ -64,34 +64,54 @@
             </div>
 
             <div id="eventForm" class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-6 hidden">
-                <h3 class="text-xl font-semibold mb-4">Create New Event</h3>
-                <form onsubmit="handleCreateEvent(event)" class="space-y-4">
+                <h3 id="event-form-heading" class="text-xl font-semibold mb-4">Create New Event</h3>
+                <form id="event-form" method="POST" action="{{ url('/admin/cms') }}" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm text-gray-400 mb-2">Event Title</label>
-                            <input type="text" id="title" required
+                            <input type="text" id="title" name="title" required
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-400 mb-2">Date</label>
-                            <input type="date" id="date" required
+                            <input type="date" id="date" name="date" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Time</label>
+                            <input type="time" id="time" name="time" required
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-400 mb-2">Location</label>
-                            <input type="text" id="location" required
+                            <input type="text" id="location" name="location" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Address</label>
+                            <input type="text" id="adress" name="adress" required
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-400 mb-2">Capacity</label>
-                            <input type="number" id="capacity" required
+                            <input type="number" id="max_spots" name="max_spots" required
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm text-gray-400 mb-2">Description</label>
+                            <textarea id="description" name="description" rows="4"
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Image</label>
+                            <input type="file" name="image" accept="image/*" class="w-full text-sm text-gray-300" />
                         </div>
                     </div>
                     <div class="flex gap-3">
-                        <button type="submit"
+                        <button id="event-form-submit" type="submit"
                             class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200">Create</button>
-                        <button type="button" onclick="toggleForm()"
+                        <button id="event-form-cancel" type="button" onclick="toggleForm()"
                             class="px-8 py-3 border border-white/20 rounded-full hover:bg-white/5">Cancel</button>
                     </div>
                 </form>
@@ -114,10 +134,37 @@
                                     Out</span>
                             @endif
                         </div>
+                        <div class="flex justify-end items-center gap-2 mt-3 mb-4">
+                            <button type="button" class="edit-btn inline-flex items-center justify-center h-8 w-8 rounded-md bg-white/5 hover:bg-white/10 text-sm"
+                                title="Edit"
+                                data-id="{{ $event['event_id'] }}"
+                                data-title="{{ $event['title'] }}"
+                                data-date="{{ $event['date'] }}"
+                                data-time="{{ $event['time'] }}"
+                                data-location="{{ $event['location'] }}"
+                                data-adress="{{ $event['adress'] }}"
+                                data-description="{{ $event['description'] }}"
+                                >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                </svg>
+                            </button>
+
+                            <form method="POST" action="{{ url('/admin/events/'.$event['event_id']) }}" onsubmit="return confirm('Delete this event?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" title="Delete" class="inline-flex items-center justify-center h-8 w-8 rounded-md bg-red-600 hover:bg-red-700 text-white text-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm4 11H8v-2h8v2z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+
                         <div class="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
                             <div>
                                 <div class="text-xs text-gray-500 mb-1">Tickets Sold</div>
-                                <div class="font-semibold">{{ $event['tickets_sold'] }}/{{ $event['capacity'] }}</div>
+                                <div class="font-semibold">{{ $event['tickets_sold'] }}/{{ $event['max_spots'] }}</div>
                             </div>
                             <div>
                                 <div class="text-xs text-gray-500 mb-1">Revenue</div>
@@ -125,7 +172,7 @@
                             </div>
                             <div>
                                 <div class="text-xs text-gray-500 mb-1">Fill Rate</div>
-                                <div class="font-semibold">{{ round(($event['tickets_sold'] / $event['capacity']) * 100) }}%
+                                <div class="font-semibold">{{ round(($event['tickets_sold'] / $event['max_spots']) * 100) }}%
                                 </div>
                             </div>
                         </div>
@@ -289,6 +336,79 @@
                   'Contact Email: ' + email + '\n\n' +
                   'This will be connected to the database later.');
         }
+
+        // Wire edit buttons to prefill the form
+        (function(){
+            const editBtns = document.querySelectorAll('.edit-btn');
+            const form = document.getElementById('event-form');
+            const heading = document.getElementById('event-form-heading');
+            const submitBtn = document.getElementById('event-form-submit');
+            const cancelBtn = document.getElementById('event-form-cancel');
+
+            if(!form) return;
+
+            function switchToCreate(){
+                form.removeAttribute('data-editing');
+                const methodInput = form.querySelector('input[name="_method"]');
+                if(methodInput) methodInput.remove();
+                form.action = "{{ url('/admin/cms') }}";
+                if(heading) heading.textContent = 'Create New Event';
+                if(submitBtn) submitBtn.textContent = 'Create';
+                form.reset();
+            }
+
+            function switchToEdit(data){
+                form.setAttribute('data-editing', data.id);
+                // set form action and add _method=PUT
+                form.action = '/admin/events/' + data.id;
+                let methodInput = form.querySelector('input[name="_method"]');
+                if(!methodInput){
+                    methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    form.appendChild(methodInput);
+                }
+                methodInput.value = 'PUT';
+
+                // fill fields
+                form.querySelector('#title').value = data.title || '';
+                form.querySelector('#date').value = data.date || '';
+                if(form.querySelector('#time')) form.querySelector('#time').value = data.time || '';
+                form.querySelector('#location').value = data.location || '';
+                form.querySelector('#adress').value = data.adress || '';
+                if(form.querySelector('#max_spots')) form.querySelector('#max_spots').value = data.max_spots || data.maxSpots || '';
+                if(form.querySelector('#description')) form.querySelector('#description').value = data.description || '';
+
+                if(heading) heading.textContent = 'Edit Event';
+                if(submitBtn) submitBtn.textContent = 'Save changes';
+                // show form
+                const wrap = document.getElementById('eventForm');
+                if(wrap) wrap.classList.remove('hidden');
+            }
+
+            editBtns.forEach(btn => {
+                btn.addEventListener('click', function(){
+                    const data = {
+                        id: btn.dataset.id,
+                        title: btn.dataset.title,
+                        date: btn.dataset.date,
+                        time: btn.dataset.time,
+                        location: btn.dataset.location,
+                        adress: btn.dataset.adress,
+                        description: btn.dataset.description,
+                        max_spots: btn.dataset.max_spots
+                    };
+                    switchToEdit(data);
+                });
+            });
+
+            if(cancelBtn){
+                cancelBtn.addEventListener('click', function(){
+                    switchToCreate();
+                    document.getElementById('eventForm').classList.add('hidden');
+                });
+            }
+        })();
     </script>
 
 </body>

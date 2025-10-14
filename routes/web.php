@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
 use App\Models\Event;
+use App\Http\Controllers\CmsController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 // Login (GET shows form, POST handles login)
@@ -111,53 +113,39 @@ Route::get('/account/settings', function () {
     return view('account-settings');
 })->name('account.settings');
 
-use App\Http\Controllers\CmsController;
 // CMS Dashboard for Event Organizers and Admins
 Route::get('/admin/cms', [CmsController::class, 'index'])->name('admin.cms');
+Route::post('/admin/cms', [CmsController::class, 'store'])->name('admin.cms.store');
+Route::get('/admin/events/{id}/edit', [CmsController::class, 'edit'])->name('admin.events.edit');
+Route::put('/admin/events/{id}', [CmsController::class, 'update'])->name('admin.events.update');
+Route::delete('/admin/events/{id}', [CmsController::class, 'destroy'])->name('admin.events.destroy');
 
 // Organizer CMS Dashboard - Limited functionality for event organizers
 Route::get('/organizer/cms', function () {
-    // Mock data for organizer's own events only
-    $organizerName = 'John Smith'; // In production, this would come from authentication
+    // Use the first user as organizer display name (no auth context available)
+    $organizer = User::first();
+    $organizerName = $organizer->name ?? 'Organizer';
 
-    // Organizer's events only (subset of all events)
-    $organizerEvents = [
-        [
-            'id' => 1,
-            'title' => 'Summer Music Festival 2025',
-            'date' => '2025-07-15',
-            'location' => 'Central Park, NY',
-            'tickets_sold' => 1500,
-            'capacity' => 2000,
-            'status' => 'active',
-            'revenue' => 75000,
-            'created_at' => '2025-01-15'
-        ],
-        [
-            'id' => 4,
-            'title' => 'Local Art Exhibition',
-            'date' => '2025-08-12',
-            'location' => 'Community Gallery, Brooklyn',
-            'tickets_sold' => 120,
-            'capacity' => 200,
-            'status' => 'active',
-            'revenue' => 2400,
-            'created_at' => '2025-02-20'
-        ],
-        [
-            'id' => 5,
-            'title' => 'Jazz Night Concert',
-            'date' => '2025-09-05',
-            'location' => 'Blue Note Club, NYC',
-            'tickets_sold' => 180,
-            'capacity' => 180,
-            'status' => 'sold_out',
-            'revenue' => 5400,
-            'created_at' => '2025-03-10'
-        ]
-    ];
+    // Load events from the database. There isn't an organizer_id on events in the current schema,
+    // so we return all events ordered by date. If you later add an organizer relationship, filter here.
+    $events = App\Models\Event::orderBy('date', 'desc')->get();
 
-    // Calculate organizer's stats
+    $organizerEvents = $events->map(function($event){
+        return [
+            'id' => $event->event_id,
+            'title' => $event->title,
+            'date' => $event->date,
+            'location' => $event->location,
+            'tickets_sold' => $event->tickets_sold ?? 0,
+            // use max_spots as requested
+            'max_spots' => $event->max_spots ?? 0,
+            'status' => ($event->available_spots ?? 0) > 0 ? 'active' : 'sold_out',
+            'revenue' => $event->revenue ?? 0,
+            // created_at not in events table in SQL dump, use date as fallback for display
+            'created_at' => $event->created_at ?? $event->date,
+        ];
+    })->toArray();
+
     $totalOrganizerEvents = count($organizerEvents);
     $totalOrganizerRevenue = array_sum(array_column($organizerEvents, 'revenue'));
     $totalOrganizerTickets = array_sum(array_column($organizerEvents, 'tickets_sold'));

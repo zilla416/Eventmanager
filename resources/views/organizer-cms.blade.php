@@ -155,7 +155,7 @@
                                             {{ \Carbon\Carbon::parse($event['date'])->format('M j, Y') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($event['tickets_sold']) }}/{{ number_format($event['capacity']) }}
+                                            {{ number_format($event['tickets_sold']) }}/{{ number_format($event['max_spots']) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             ${{ number_format($event['revenue']) }}
@@ -168,8 +168,12 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button class="text-green-600 hover:text-green-900 mr-3">Edit</button>
-                                            <button class="text-red-600 hover:text-red-900">Delete</button>
+                                            <button type="button" class="text-green-600 hover:text-green-900 mr-3 org-edit-btn" data-id="{{ $event['id'] }}" data-title="{{ $event['title'] }}" data-date="{{ $event['date'] }}" data-time="{{ $event['time'] ?? '' }}" data-location="{{ $event['location'] }}" data-max_spots="{{ $event['max_spots'] }}" data-adress="{{ $event['created_at'] }}" data-description="{{ $event['description'] ?? '' }}">Edit</button>
+                                            <form method="POST" class="inline" action="{{ url('/admin/events/'.$event['id']) }}" onsubmit="return confirm('Delete this event?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -209,10 +213,10 @@
                             <div class="mb-4">
                                 <div class="flex justify-between text-sm mb-1">
                                     <span class="text-gray-600">Sales Progress</span>
-                                    <span class="text-gray-900 font-medium">{{ number_format($event['tickets_sold']) }}/{{ number_format($event['capacity']) }}</span>
+                                    <span class="text-gray-900 font-medium">{{ number_format($event['tickets_sold']) }}/{{ number_format($event['max_spots']) }}</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-green-600 h-2 rounded-full" style="width: {{ ($event['tickets_sold'] / $event['capacity']) * 100 }}%"></div>
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: {{ $event['max_spots'] > 0 ? ($event['tickets_sold'] / $event['max_spots']) * 100 : 0 }}%"></div>
                                 </div>
                             </div>
 
@@ -221,13 +225,17 @@
                                 <span class="text-xs text-gray-500">Created {{ \Carbon\Carbon::parse($event['created_at'])->format('M j, Y') }}</span>
                             </div>
 
-                            <div class="flex space-x-3">
-                                <button class="flex-1 px-3 py-2 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 font-medium">
+                                <div class="flex space-x-3">
+                                <button type="button" data-id="{{ $event['id'] }}" data-title="{{ $event['title'] }}" data-date="{{ $event['date'] }}" data-time="{{ $event['time'] ?? '' }}" data-location="{{ $event['location'] }}" data-max_spots="{{ $event['max_spots'] }}" data-adress="{{ $event['created_at'] }}" data-description="{{ $event['description'] ?? '' }}" class="org-edit-btn flex-1 px-3 py-2 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 font-medium">
                                     <i class="fas fa-edit mr-1"></i>Edit Event
                                 </button>
-                                <button class="flex-1 px-3 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium" onclick="confirmDelete('{{ $event['title'] }}')">
-                                    <i class="fas fa-trash mr-1"></i>Delete Event
-                                </button>
+                                <form method="POST" action="{{ url('/admin/events/'.$event['id']) }}" class="flex-1" onsubmit="return confirm('Delete this event?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-full px-3 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium">
+                                        <i class="fas fa-trash mr-1"></i>Delete Event
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         @endforeach
@@ -242,40 +250,45 @@
                     </div>
 
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-3xl">
-                        <form class="space-y-6">
+                        <form id="organizer-event-form" method="POST" action="{{ url('/admin/cms') }}" enctype="multipart/form-data" class="space-y-6">
+                            @csrf
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Event Title *</label>
-                                    <input type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter your event title">
+                                    <input type="text" name="title" id="org-title" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter your event title">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Event Date *</label>
-                                    <input type="date" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                    <input type="date" name="date" id="org-date" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Event Time *</label>
-                                    <input type="time" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                    <input type="time" name="time" id="org-time" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Max Capacity *</label>
-                                    <input type="number" required min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Maximum attendees">
+                                    <input type="number" name="max_spots" id="org-max_spots" required min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Maximum attendees">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name *</label>
-                                    <input type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Venue or location name">
+                                    <input type="text" name="location" id="org-location" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Venue or location name">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Ticket Price ($)</label>
-                                    <input type="number" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Price per ticket">
+                                    <input type="number" step="0.01" min="0" name="price" id="org-price" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Price per ticket">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Full Address *</label>
-                                <input type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Complete venue address">
+                                <input type="text" name="adress" id="org-adress" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Complete venue address">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Event Description *</label>
-                                <textarea rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Describe your event, what attendees can expect, any special features..."></textarea>
+                                <textarea name="description" id="org-description" rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Describe your event, what attendees can expect, any special features..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Event Image</label>
+                                <input type="file" name="image" id="org-image" accept="image/*" class="w-full text-sm text-gray-600">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Event Category</label>
@@ -295,8 +308,8 @@
                                     <button type="button" onclick="showTab('events')" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
                                         Cancel
                                     </button>
-                                    <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">
-                                        <i class="fas fa-plus mr-2"></i>Create Event
+                                    <button id="org-form-submit" type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">
+                                        <i class="fas fa-plus mr-2"></i><span id="org-submit-label">Create Event</span>
                                     </button>
                                 </div>
                             </div>
@@ -321,7 +334,7 @@
                                     <div>
                                         <h4 class="font-medium text-gray-900">{{ $event['title'] }}</h4>
                                         <p class="text-sm text-gray-600">${{ number_format($event['revenue']) }} revenue</p>
-                                        <p class="text-sm text-gray-500">{{ number_format(($event['tickets_sold'] / $event['capacity']) * 100, 1) }}% sold</p>
+                                        <p class="text-sm text-gray-500">{{ number_format($event['max_spots'] > 0 ? ($event['tickets_sold'] / $event['max_spots']) * 100 : 0, 1) }}% sold</p>
                                     </div>
                                     <div class="text-right">
                                         <span class="text-lg font-bold text-green-600">#{{ $index + 1 }}</span>
@@ -376,6 +389,67 @@
                 alert('Event would be deleted (backend integration needed)');
             }
         }
+
+        // Organizer edit form wiring
+        (function(){
+            const editBtns = document.querySelectorAll('.org-edit-btn');
+            const form = document.getElementById('organizer-event-form');
+            const submitLabel = document.getElementById('org-submit-label');
+            const cancelNav = document.querySelector('#create-nav');
+
+            function setCreateMode(){
+                form.reset();
+                form.action = "{{ url('/admin/cms') }}";
+                const methodInput = form.querySelector('input[name="_method"]');
+                if(methodInput) methodInput.remove();
+                if(submitLabel) submitLabel.textContent = 'Create Event';
+            }
+
+            function setEditMode(data){
+                form.action = '/admin/events/' + data.id;
+                let methodInput = form.querySelector('input[name="_method"]');
+                if(!methodInput){
+                    methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    form.appendChild(methodInput);
+                }
+                methodInput.value = 'PUT';
+
+                // fill inputs
+                document.getElementById('org-title').value = data.title || '';
+                document.getElementById('org-date').value = data.date || '';
+                if(document.getElementById('org-time')) document.getElementById('org-time').value = data.time || '';
+                document.getElementById('org-location').value = data.location || '';
+                document.getElementById('org-max_spots').value = data.max_spots || '';
+                document.getElementById('org-adress').value = data.adress || '';
+                if(document.getElementById('org-description')) document.getElementById('org-description').value = data.description || '';
+                if(document.getElementById('org-price')) document.getElementById('org-price').value = data.price || '';
+
+                if(submitLabel) submitLabel.textContent = 'Save Changes';
+                // show create tab
+                showTab('create');
+            }
+
+            editBtns.forEach(btn => {
+                btn.addEventListener('click', function(){
+                    const data = {
+                        id: btn.dataset.id,
+                        title: btn.dataset.title,
+                        date: btn.dataset.date,
+                        time: btn.dataset.time,
+                        location: btn.dataset.location,
+                        max_spots: btn.dataset.max_spots,
+                        adress: btn.dataset.adress,
+                        description: btn.dataset.description,
+                    };
+                    setEditMode(data);
+                });
+            });
+
+            // reset to create on page load
+            setCreateMode();
+        })();
     </script>
 </body>
 
