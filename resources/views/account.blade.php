@@ -20,12 +20,12 @@
                     <!-- User Profile Section -->
                     <div class="flex items-center space-x-4">
                         <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                            JD
+                            {{ strtoupper(substr(auth()->user()->name ?? auth()->user()->email, 0, 2)) }}
                         </div>
                         <div>
-                            <h1 class="text-2xl font-bold">John Doe</h1>
-                            <p class="text-gray-400">john.doe@example.com</p>
-                            <p class="text-sm text-gray-500">Member since January 2022</p>
+                            <h1 class="text-2xl font-bold">{{ auth()->user()->name ?? 'User' }}</h1>
+                            <p class="text-gray-400">{{ auth()->user()->email }}</p>
+                            <p class="text-sm text-gray-500">Member since {{ auth()->user()->created_at->format('F Y') }}</p>
                         </div>
                     </div>
 
@@ -37,7 +37,7 @@
                         <a href="{{ route('admin.cms') }}" class="px-4 py-2 text-sm font-medium bg-white text-black rounded-full hover:bg-gray-200 transition-all duration-200 flex items-center font-semibold">
                             <i class="fas fa-tools mr-2"></i>Admin CMS
                         </a>
-                        <button class="p-2 text-gray-400 hover:text-white transition-all duration-200">
+                        <button onclick="switchTab('settings')" class="p-2 text-gray-400 hover:text-white transition-all duration-200">
                             <i class="fas fa-cog w-5 h-5"></i>
                         </button>
                         <button class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-all duration-200">
@@ -140,28 +140,43 @@
                 <div id="settings-content" class="tab-content p-6 hidden">
                     <h2 class="text-xl font-bold mb-6">Account Settings</h2>
 
+                    <!-- Success Message -->
+                    @if(session('success'))
+                    <div class="mb-6 bg-green-500/20 border border-green-500/30 rounded-xl p-4 text-green-400">
+                        <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+                    </div>
+                    @endif
+
                     <div class="max-w-2xl">
                         <!-- Profile Information Section -->
                         <div class="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
                             <h3 class="text-lg font-semibold mb-4">Profile Information</h3>
-                            <form class="space-y-4">
+                            
+                            @if($errors->any() && !$errors->has('current_password') && !$errors->has('new_password'))
+                            <div class="mb-4 bg-red-500/20 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
+                                <ul class="list-disc list-inside">
+                                    @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            @endif
+
+                            <form action="{{ route('account.profile.update') }}" method="POST" class="space-y-4">
+                                @csrf
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label for="first_name" class="block text-sm font-medium text-gray-300 mb-2">First Name</label>
-                                        <input type="text" id="first_name" name="first_name" value="John" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
+                                        <input type="text" id="first_name" name="first_name" value="{{ old('first_name', explode(' ', auth()->user()->name ?? '')[0] ?? '') }}" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
                                     </div>
                                     <div>
                                         <label for="last_name" class="block text-sm font-medium text-gray-300 mb-2">Last Name</label>
-                                        <input type="text" id="last_name" name="last_name" value="Doe" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
+                                        <input type="text" id="last_name" name="last_name" value="{{ old('last_name', explode(' ', auth()->user()->name ?? '')[1] ?? '') }}" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
                                     </div>
                                 </div>
                                 <div>
                                     <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
-                                    <input type="email" id="email" name="email" value="john.doe@example.com" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
-                                </div>
-                                <div>
-                                    <label for="phone" class="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
-                                    <input type="tel" id="phone" name="phone" value="+1 (555) 123-4567" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
+                                    <input type="email" id="email" name="email" value="{{ old('email', auth()->user()->email) }}" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
                                 </div>
                                 <div class="flex justify-end">
                                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-all duration-200">
@@ -174,18 +189,34 @@
                         <!-- Password Change Section -->
                         <div class="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
                             <h3 class="text-lg font-semibold mb-4">Change Password</h3>
-                            <form class="space-y-4">
+                            
+                            @if($errors->has('current_password') || $errors->has('new_password'))
+                            <div class="mb-4 bg-red-500/20 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
+                                <ul class="list-disc list-inside">
+                                    @if($errors->has('current_password'))
+                                    <li>{{ $errors->first('current_password') }}</li>
+                                    @endif
+                                    @if($errors->has('new_password'))
+                                    <li>{{ $errors->first('new_password') }}</li>
+                                    @endif
+                                </ul>
+                            </div>
+                            @endif
+
+                            <form action="{{ route('account.password.update') }}" method="POST" class="space-y-4">
+                                @csrf
                                 <div>
                                     <label for="current_password" class="block text-sm font-medium text-gray-300 mb-2">Current Password</label>
-                                    <input type="password" id="current_password" name="current_password" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
+                                    <input type="password" id="current_password" name="current_password" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
                                 </div>
                                 <div>
                                     <label for="new_password" class="block text-sm font-medium text-gray-300 mb-2">New Password</label>
-                                    <input type="password" id="new_password" name="new_password" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
+                                    <input type="password" id="new_password" name="new_password" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
+                                    <p class="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
                                 </div>
                                 <div>
-                                    <label for="confirm_password" class="block text-sm font-medium text-gray-300 mb-2">Confirm New Password</label>
-                                    <input type="password" id="confirm_password" name="confirm_password" class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
+                                    <label for="new_password_confirmation" class="block text-sm font-medium text-gray-300 mb-2">Confirm New Password</label>
+                                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
                                 </div>
                                 <div class="flex justify-end">
                                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-all duration-200">
@@ -241,7 +272,7 @@
                                         <h4 class="text-sm font-medium text-red-400">Delete Account</h4>
                                         <p class="text-sm text-red-300/80">Permanently delete your account and all associated data</p>
                                     </div>
-                                    <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-all duration-200">
+                                    <button onclick="confirmDelete()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-all duration-200">
                                         Delete Account
                                     </button>
                                 </div>
@@ -274,6 +305,56 @@
             activeTab.classList.remove('border-transparent', 'text-gray-400');
             activeTab.classList.add('border-blue-500', 'text-blue-400');
         }
+
+        function confirmDelete() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                const password = prompt('Please enter your password to confirm:');
+                if (password) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route("account.delete") }}';
+                    
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    
+                    const methodField = document.createElement('input');
+                    methodField.type = 'hidden';
+                    methodField.name = '_method';
+                    methodField.value = 'DELETE';
+                    
+                    const passwordField = document.createElement('input');
+                    passwordField.type = 'hidden';
+                    passwordField.name = 'password';
+                    passwordField.value = password;
+                    
+                    form.appendChild(csrfToken);
+                    form.appendChild(methodField);
+                    form.appendChild(passwordField);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        }
+
+        // Check if there are errors and switch to settings tab
+        @if($errors->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            switchTab('settings');
+        });
+        @endif
+
+        // Check for success message and switch to settings tab
+        @if(session('success'))
+        document.addEventListener('DOMContentLoaded', function() {
+            switchTab('settings');
+        });
+        @endif
+    </script>
+</body>
+
+</html>
     </script>
 </body>
 
