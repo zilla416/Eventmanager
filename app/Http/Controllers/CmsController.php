@@ -166,15 +166,32 @@ class CmsController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
+            'is_admin' => 'required|in:0,1', // Only allow 0 (customer) or 1 (organizer)
         ]);
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
-            'is_admin' => 1, // Set as organizer
+            'is_admin' => $data['is_admin'],
         ]);
 
-        return redirect()->back()->with('success', 'Organizer ' . $user->name . ' has been created successfully');
+        $roleText = $data['is_admin'] == 1 ? 'Organizer' : 'Customer';
+        return redirect()->back()->with('success', $roleText . ' ' . $user->name . ' has been created successfully');
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        
+        // Prevent deleting admin (is_admin = 2)
+        if ($user->is_admin == 2) {
+            return redirect()->back()->with('error', 'Cannot delete admin users');
+        }
+        
+        $userName = $user->name;
+        $user->delete();
+        
+        return redirect()->back()->with('success', 'User ' . $userName . ' has been deleted successfully');
     }
 }

@@ -197,6 +197,7 @@ Route::delete('/admin/events/{id}', [CmsController::class, 'destroy'])->name('ad
 Route::post('/admin/users/{id}/promote', [CmsController::class, 'promoteUser'])->name('admin.users.promote');
 Route::post('/admin/users/{id}/demote', [CmsController::class, 'demoteUser'])->name('admin.users.demote');
 Route::post('/admin/users/create-organizer', [CmsController::class, 'createOrganizer'])->name('admin.users.create-organizer');
+Route::delete('/admin/users/{id}', [CmsController::class, 'deleteUser'])->name('admin.users.delete');
 
 // Organizer CMS Dashboard - Limited functionality for event organizers
 Route::get('/organizer/cms', function () {

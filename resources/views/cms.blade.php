@@ -49,8 +49,6 @@
                 class="px-6 py-3 bg-white text-black rounded-full text-sm font-semibold">Events</button>
             <button onclick="showTab('users')" id="tab-users"
                 class="px-6 py-3 bg-white/5 rounded-full text-sm border border-white/10">Users</button>
-            <button onclick="showTab('analytics')" id="tab-analytics"
-                class="px-6 py-3 bg-white/5 rounded-full text-sm border border-white/10">Analytics</button>
             <button onclick="showTab('settings')" id="tab-settings"
                 class="px-6 py-3 bg-white/5 rounded-full text-sm border border-white/10">Settings</button>
         </div>
@@ -186,12 +184,12 @@
                 <h2 class="text-2xl font-bold">User Management</h2>
                 <button onclick="toggleOrganizerForm()"
                     class="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">+
-                    Create Organizer</button>
+                    Create User</button>
             </div>
 
             <!-- Create Organizer Form -->
             <div id="organizerForm" class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-6 hidden">
-                <h3 class="text-xl font-semibold mb-4">Create New Organizer</h3>
+                <h3 class="text-xl font-semibold mb-4">Create New User</h3>
                 <form method="POST" action="{{ route('admin.users.create-organizer') }}" class="space-y-4">
                     @csrf
                     <div class="grid md:grid-cols-2 gap-4">
@@ -205,16 +203,25 @@
                             <input type="email" name="email" required
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
                         </div>
-                        <div class="md:col-span-2">
+                        <div>
                             <label class="block text-sm text-gray-400 mb-2">Password</label>
                             <input type="password" name="password" required minlength="8"
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
                             <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
                         </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">User Role</label>
+                            <select name="is_admin" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                                <option value="1">Organizer</option>
+                                <option value="0">Customer</option>
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">Select user role type</p>
+                        </div>
                     </div>
                     <div class="flex gap-3">
                         <button type="submit"
-                            class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200">Create Organizer</button>
+                            class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200">Create User</button>
                         <button type="button" onclick="toggleOrganizerForm()"
                             class="px-8 py-3 border border-white/20 rounded-full hover:bg-white/5">Cancel</button>
                     </div>
@@ -255,12 +262,21 @@
                                     <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-semibold">Organizer</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <form method="POST" action="{{ route('admin.users.demote', $organizer->id) }}" class="inline">
-                                        @csrf
-                                        <button type="submit" class="px-4 py-2 bg-orange-500/20 text-orange-400 rounded-lg text-xs font-semibold hover:bg-orange-500/30 transition">
-                                            Demote to Customer
-                                        </button>
-                                    </form>
+                                    <div class="flex gap-2">
+                                        <form method="POST" action="{{ route('admin.users.demote', $organizer->id) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" class="px-4 py-2 bg-orange-500/20 text-orange-400 rounded-lg text-xs font-semibold hover:bg-orange-500/30 transition">
+                                                Demote
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.users.delete', $organizer->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/30 transition">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -307,12 +323,21 @@
                                     <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold">Customer</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <form method="POST" action="{{ route('admin.users.promote', $customer->id) }}" class="inline">
-                                        @csrf
-                                        <button type="submit" class="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg text-xs font-semibold hover:bg-green-500/30 transition">
-                                            Promote to Organizer
-                                        </button>
-                                    </form>
+                                    <div class="flex gap-2">
+                                        <form method="POST" action="{{ route('admin.users.promote', $customer->id) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" class="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg text-xs font-semibold hover:bg-green-500/30 transition">
+                                                Promote
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.users.delete', $customer->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/30 transition">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -322,35 +347,6 @@
                             @endforelse
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="content-analytics" class="hidden">
-            <h2 class="text-2xl font-bold mb-6">Analytics</h2>
-            <div class="grid lg:grid-cols-2 gap-6">
-                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-                    <h3 class="text-lg font-semibold mb-4">Top Events</h3>
-                    <div class="space-y-3">
-                        @foreach($recentEvents as $index => $event)
-                            <div class="flex justify-between p-3 bg-white/5 rounded-xl">
-                                <div>
-                                    <div class="font-medium">{{ $event['title'] }}</div>
-                                    <div class="text-sm text-gray-400">${{ $event['revenue'] }} revenue</div>
-                                </div>
-                                <div class="text-xl font-bold text-gray-500">#{{ $index + 1 }}</div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-                    <h3 class="text-lg font-semibold mb-4">Revenue Chart</h3>
-                    <div class="h-64 flex items-center justify-center bg-white/5 rounded-xl">
-                        <div class="text-center text-gray-400">
-                            <div class="text-4xl mb-2">📊</div>
-                            <p class="text-sm">Chart visualization</p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
