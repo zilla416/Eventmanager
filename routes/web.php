@@ -260,6 +260,12 @@ Route::get('/admin/events/{id}/edit', [CmsController::class, 'edit'])->name('adm
 Route::put('/admin/events/{id}', [CmsController::class, 'update'])->name('admin.events.update');
 Route::delete('/admin/events/{id}', [CmsController::class, 'destroy'])->name('admin.events.destroy');
 
+// User Management Routes
+Route::post('/admin/users/{id}/promote', [CmsController::class, 'promoteUser'])->name('admin.users.promote');
+Route::post('/admin/users/{id}/demote', [CmsController::class, 'demoteUser'])->name('admin.users.demote');
+Route::post('/admin/users/create-organizer', [CmsController::class, 'createOrganizer'])->name('admin.users.create-organizer');
+Route::delete('/admin/users/{id}', [CmsController::class, 'deleteUser'])->name('admin.users.delete');
+
 // Organizer CMS Dashboard - Limited functionality for event organizers
 Route::get('/organizer/cms', function () {
     // Use the first user as organizer display name (no auth context available)
