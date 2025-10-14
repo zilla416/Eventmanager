@@ -24,6 +24,7 @@ class Event extends Model
         'category_id',
         'max_spots',
         'tickets_sold',
-        'revenue'
+        'revenue',
+        'organizer_id'
     ];
 }

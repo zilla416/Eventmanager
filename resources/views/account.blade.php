@@ -1,361 +1,438 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    @vite(['resources/css/app.css'])
-    @stack('styles')
-</head>
+@section('title', 'My Account')
 
-<body class="bg-black text-white">
-    <div class="min-h-screen">
-        <!-- Header -->
-        <header class="border-b border-white/10 bg-black">
-            <div class="max-w-7xl mx-auto px-6 md:px-8">
-                <div class="flex justify-between items-center py-6">
-                    <!-- User Profile Section -->
-                    <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                            {{ strtoupper(substr(auth()->user()->name ?? auth()->user()->email, 0, 2)) }}
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold">{{ auth()->user()->name ?? 'User' }}</h1>
-                            <p class="text-gray-400">{{ auth()->user()->email }}</p>
-                            <p class="text-sm text-gray-500">Member since {{ auth()->user()->created_at->format('F Y') }}</p>
-                        </div>
-                    </div>
+@section('content')
+<div class="min-h-screen bg-black text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <!-- Tab Navigation -->
+        <div class="flex gap-2 sm:gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+            <button onclick="showTab('profile')" id="tab-profile" class="px-4 sm:px-6 py-2 sm:py-3 bg-white text-black rounded-full text-sm font-semibold whitespace-nowrap">Profile</button>
+            <button onclick="showTab('tickets')" id="tab-tickets" class="px-4 sm:px-6 py-2 sm:py-3 bg-white/5 rounded-full text-sm border border-white/10 whitespace-nowrap">My Tickets</button>
+            <button onclick="showTab('settings')" id="tab-settings" class="px-4 sm:px-6 py-2 sm:py-3 bg-white/5 rounded-full text-sm border border-white/10 whitespace-nowrap">Settings</button>
+        </div>
 
-                    <!-- Header Actions -->
-                    <div class="flex items-center space-x-3">
-                        <a href="{{ route('organizer.cms') }}" class="px-4 py-2 text-sm font-medium bg-white/5 hover:bg-white/10 rounded-full border border-white/10 hover:border-white/20 transition-all duration-200 flex items-center">
-                            <i class="fas fa-user-tie mr-2"></i>Organizer
-                        </a>
-                        <a href="{{ route('admin.cms') }}" class="px-4 py-2 text-sm font-medium bg-white text-black rounded-full hover:bg-gray-200 transition-all duration-200 flex items-center font-semibold">
-                            <i class="fas fa-tools mr-2"></i>Admin CMS
-                        </a>
-                        <button onclick="switchTab('settings')" class="p-2 text-gray-400 hover:text-white transition-all duration-200">
-                            <i class="fas fa-cog w-5 h-5"></i>
-                        </button>
-                        <button class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-all duration-200">
-                            Sign Out
-                        </button>
-                    </div>
+        <!-- Profile Tab -->
+        <div id="content-profile">
+            @if(session('success'))
+                <div class="bg-green-500/20 border border-green-500/50 text-green-400 px-4 py-3 rounded-xl mb-6">
+                    ✓ {{ session('success') }}
                 </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="max-w-7xl mx-auto px-6 md:px-8 py-12">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                <!-- Upcoming Events Card -->
-                <div class="bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
-                            <i class="fas fa-calendar-alt text-blue-400 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-3xl font-bold">{{ count($upcomingEvents) }}</h3>
-                            <p class="text-gray-400">Upcoming Events</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Total Tickets Card -->
-                <div class="bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-14 h-14 bg-green-500/20 rounded-xl flex items-center justify-center border border-green-500/30">
-                            <i class="fas fa-ticket-alt text-green-400 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-3xl font-bold">{{ $totalTickets }}</h3>
-                            <p class="text-gray-400">Total Tickets</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navigation Tabs -->
-            <div class="bg-white/5 rounded-2xl border border-white/10 mb-8">
-                <div class="border-b border-white/10">
-                    <nav class="flex space-x-8 px-6">
-                        <button onclick="switchTab('tickets')" id="tickets-tab" class="tab-link py-4 px-1 border-b-2 border-blue-500 text-blue-400 font-medium text-sm">
-                            My Tickets
-                        </button>
-                        <button onclick="switchTab('settings')" id="settings-tab" class="tab-link py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-white/20 font-medium text-sm transition-all duration-200">
-                            Account Settings
-                        </button>
-                    </nav>
-                </div>
-
-                <!-- My Tickets Tab Content -->
-                <div id="tickets-content" class="tab-content p-6">
-                    <h2 class="text-xl font-bold mb-6">Upcoming Events</h2>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        @foreach($upcomingEvents as $event)
-                        <!-- {{ $event['title'] }} Event Card -->
-                        <div class="flex bg-white/5 rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-300">
-                            <div class="w-24 h-24 {{ $event['color'] }} rounded-lg flex-shrink-0 mr-4 relative overflow-hidden">
-                                <div class="w-full h-full flex items-center justify-center text-white">
-                                    <i class="{{ $event['icon'] }} text-2xl"></i>
+            @endif
+            
+            <div class="grid lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Profile Card -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white/5 rounded-2xl p-6 border border-white/10 sticky top-24">
+                        <div class="flex flex-col items-center text-center">
+                            <!-- Avatar -->
+                            <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-3xl font-bold mb-4">
+                                {{ strtoupper(substr($user->name, 0, 2)) }}
+                            </div>
+                            <h2 class="text-2xl font-bold mb-1">{{ $user->name }}</h2>
+                            <p class="text-gray-400 text-sm mb-4">{{ $user->email }}</p>
+                            <div class="w-full space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-400">Member Since</span>
+                                    <span class="font-semibold">{{ $memberSince }}</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-400">Total Tickets</span>
+                                    <span class="font-semibold">{{ $totalTickets }}</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-400">Events Attended</span>
+                                    <span class="font-semibold">{{ $eventsAttended }}</span>
                                 </div>
                             </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="font-semibold">{{ $event['title'] }}</h3>
-                                    <span class="bg-orange-500/20 text-orange-400 text-xs px-2 py-1 rounded-full border border-orange-500/30">{{ $event['user_tickets'] }} {{ $event['user_tickets'] == 1 ? 'ticket' : 'tickets' }}</span>
-                                </div>
-                                <div class="text-sm text-gray-400 space-y-1">
-                                    <p><i class="far fa-calendar mr-2"></i>{{ \Carbon\Carbon::parse($event['date'])->format('M j, Y') }}</p>
-                                    <p><i class="far fa-clock mr-2"></i>{{ \Carbon\Carbon::parse($event['time'])->format('g:i A') }}</p>
-                                    <p><i class="fas fa-map-marker-alt mr-2"></i>{{ $event['location'] }}</p>
-                                    <p><i class="fas fa-map-pin mr-2"></i>{{ $event['address'] }}</p>
-                                    <p class="font-medium text-gray-300">{{ $event['description'] }}</p>
-                                </div>
-                                <div class="flex justify-between items-center mt-4">
-                                    <div class="text-xs text-blue-400 font-medium">
-                                        You own {{ $event['user_tickets'] }} {{ $event['user_tickets'] == 1 ? 'ticket' : 'tickets' }} for this event
-                                    </div>
-                                    <div class="flex space-x-3">
-                                        <button class="flex items-center px-3 py-2 text-sm bg-white/5 text-gray-300 rounded-lg hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200">
-                                            <i class="fas fa-download mr-2"></i>Download
-                                        </button>
-                                        <button class="px-3 py-2 text-sm bg-white text-black rounded-lg hover:bg-gray-200 transition-all duration-200 font-semibold">
-                                            View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <button onclick="showEditProfile()" class="w-full mt-6 px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
+                                Edit Profile
+                            </button>
                         </div>
-                        @endforeach
                     </div>
                 </div>
 
-                <!-- Account Settings Tab Content -->
-                <div id="settings-content" class="tab-content p-6 hidden">
-                    <h2 class="text-xl font-bold mb-6">Account Settings</h2>
-
-                    <!-- Success Message -->
-                    @if(session('success'))
-                    <div class="mb-6 bg-green-500/20 border border-green-500/30 rounded-xl p-4 text-green-400">
-                        <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
-                    </div>
-                    @endif
-
-                    <div class="max-w-2xl">
-                        <!-- Profile Information Section -->
-                        <div class="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
-                            <h3 class="text-lg font-semibold mb-4">Profile Information</h3>
-                            
-                            @if($errors->any() && !$errors->has('current_password') && !$errors->has('new_password'))
-                            <div class="mb-4 bg-red-500/20 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
+                <!-- Profile Details -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Edit Profile Form (Hidden by default) -->
+                    <div id="editProfileForm" class="bg-white/5 rounded-2xl p-6 border border-white/10 hidden">
+                        <h3 class="text-xl font-bold mb-6">Edit Profile</h3>
+                        
+                        @if(session('success'))
+                            <div class="bg-green-500/20 border border-green-500/50 text-green-400 px-4 py-3 rounded-xl mb-4">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        
+                        @if($errors->any())
+                            <div class="bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-xl mb-4">
                                 <ul class="list-disc list-inside">
                                     @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
+                                        <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
                             </div>
-                            @endif
-
-                            <form action="{{ route('account.profile.update') }}" method="POST" class="space-y-4">
-                                @csrf
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="first_name" class="block text-sm font-medium text-gray-300 mb-2">First Name</label>
-                                        <input type="text" id="first_name" name="first_name" value="{{ old('first_name', explode(' ', auth()->user()->name ?? '')[0] ?? '') }}" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
-                                    </div>
-                                    <div>
-                                        <label for="last_name" class="block text-sm font-medium text-gray-300 mb-2">Last Name</label>
-                                        <input type="text" id="last_name" name="last_name" value="{{ old('last_name', explode(' ', auth()->user()->name ?? '')[1] ?? '') }}" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
-                                    <input type="email" id="email" name="email" value="{{ old('email', auth()->user()->email) }}" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
-                                </div>
-                                <div class="flex justify-end">
-                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-all duration-200">
-                                        Save Changes
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Password Change Section -->
-                        <div class="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
-                            <h3 class="text-lg font-semibold mb-4">Change Password</h3>
-                            
-                            @if($errors->has('current_password') || $errors->has('new_password'))
-                            <div class="mb-4 bg-red-500/20 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
-                                <ul class="list-disc list-inside">
-                                    @if($errors->has('current_password'))
-                                    <li>{{ $errors->first('current_password') }}</li>
-                                    @endif
-                                    @if($errors->has('new_password'))
-                                    <li>{{ $errors->first('new_password') }}</li>
-                                    @endif
-                                </ul>
+                        @endif
+                        
+                        <form action="{{ route('account.profile.update') }}" method="POST" class="space-y-4">
+                            @csrf
+                            @php
+                                $nameParts = explode(' ', $user->name, 2);
+                                $firstName = $nameParts[0] ?? '';
+                                $lastName = $nameParts[1] ?? '';
+                            @endphp
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">First Name</label>
+                                <input type="text" name="first_name" value="{{ old('first_name', $firstName) }}" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
                             </div>
-                            @endif
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Last Name</label>
+                                <input type="text" name="last_name" value="{{ old('last_name', $lastName) }}" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Email</label>
+                                <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
+                            </div>
+                            <div class="flex gap-3">
+                                <button type="submit" class="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200">Save Changes</button>
+                                <button type="button" onclick="hideEditProfile()" class="px-6 py-3 border border-white/20 rounded-full hover:bg-white/5">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
 
-                            <form action="{{ route('account.password.update') }}" method="POST" class="space-y-4">
-                                @csrf
-                                <div>
-                                    <label for="current_password" class="block text-sm font-medium text-gray-300 mb-2">Current Password</label>
-                                    <input type="password" id="current_password" name="current_password" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
-                                </div>
-                                <div>
-                                    <label for="new_password" class="block text-sm font-medium text-gray-300 mb-2">New Password</label>
-                                    <input type="password" id="new_password" name="new_password" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
-                                    <p class="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
-                                </div>
-                                <div>
-                                    <label for="new_password_confirmation" class="block text-sm font-medium text-gray-300 mb-2">Confirm New Password</label>
-                                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" required class="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white">
-                                </div>
-                                <div class="flex justify-end">
-                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-all duration-200">
-                                        Update Password
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Notification Preferences -->
-                        <div class="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
-                            <h3 class="text-lg font-semibold mb-4">Notification Preferences</h3>
+                    <!-- Recent Activity -->
+                    <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                        <h3 class="text-xl font-bold mb-6">Recent Activity</h3>
+                        @if(count($upcomingTickets) > 0 || count($pastEvents) > 0)
                             <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium">Email Notifications</h4>
-                                        <p class="text-sm text-gray-400">Receive notifications about events and updates via email</p>
+                                {{-- Show upcoming tickets first --}}
+                                @foreach(array_slice($upcomingTickets, 0, 3) as $ticket)
+                                    <div class="flex items-start gap-4 pb-4 border-b border-white/10 last:border-0 last:pb-0">
+                                        <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium">Upcoming Event</p>
+                                            <p class="text-sm text-gray-400">{{ $ticket['event_title'] }} - {{ $ticket['tickets_count'] }} {{ $ticket['tickets_count'] == 1 ? 'ticket' : 'tickets' }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ $ticket['date'] }} at {{ $ticket['time'] }}</p>
+                                        </div>
                                     </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                    </label>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium">SMS Notifications</h4>
-                                        <p class="text-sm text-gray-400">Receive text message alerts for important updates</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                    </label>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium">Event Reminders</h4>
-                                        <p class="text-sm text-gray-400">Get reminded about upcoming events you're attending</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                    </label>
-                                </div>
+                                @endforeach
+                                
+                                {{-- Show recent past events if we have less than 3 upcoming --}}
+                                @if(count($upcomingTickets) < 3)
+                                    @foreach(array_slice($pastEvents, 0, 3 - count($upcomingTickets)) as $event)
+                                        <div class="flex items-start gap-4 pb-4 border-b border-white/10 last:border-0 last:pb-0">
+                                            <div class="w-12 h-12 bg-gray-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium">Attended</p>
+                                                <p class="text-sm text-gray-400">{{ $event['event_title'] }}</p>
+                                                <p class="text-xs text-gray-500 mt-1">{{ $event['date'] }}</p>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
                             </div>
-                        </div>
+                        @else
+                            <div class="text-center py-8 text-gray-400">
+                                <p class="mb-4">No recent activity</p>
+                                <a href="{{ route('homepage') }}" class="text-white hover:text-gray-300 underline">Browse events</a>
+                            </div>
+                        @endif
+                    </div>
 
-                        <!-- Danger Zone -->
-                        <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
-                            <h3 class="text-lg font-semibold text-red-400 mb-4">Danger Zone</h3>
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-sm font-medium text-red-400">Delete Account</h4>
-                                        <p class="text-sm text-red-300/80">Permanently delete your account and all associated data</p>
-                                    </div>
-                                    <button onclick="confirmDelete()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-all duration-200">
-                                        Delete Account
-                                    </button>
-                                </div>
-                            </div>
+                    <!-- Stats -->
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                            <div class="text-sm text-gray-400 mb-2">Upcoming Events</div>
+                            <div class="text-2xl font-bold">{{ $upcomingEventsCount }}</div>
+                        </div>
+                        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                            <div class="text-sm text-gray-400 mb-2">Total Tickets</div>
+                            <div class="text-2xl font-bold">{{ $totalTickets }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+
+        <!-- My Tickets Tab -->
+        <div id="content-tickets" class="hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-2">My Tickets</h2>
+                <p class="text-gray-400">View and manage your event tickets</p>
+            </div>
+
+            <!-- Upcoming Tickets -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
+                @if(count($upcomingTickets) > 0)
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($upcomingTickets as $ticket)
+                            <!-- Ticket Card -->
+                            <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition">
+                                <div class="h-40 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="text-6xl font-bold mb-2">{{ $ticket['date_day'] }}</div>
+                                        <div class="text-sm text-gray-400">{{ $ticket['date_month_year'] }}</div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="font-bold text-lg mb-2">{{ $ticket['event_title'] }}</h4>
+                                    <div class="space-y-2 text-sm text-gray-400 mb-4">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span>{{ $ticket['location'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>{{ $ticket['time'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                                            </svg>
+                                            <span>{{ $ticket['tickets_count'] }} {{ $ticket['tickets_count'] == 1 ? 'Ticket' : 'Tickets' }}</span>
+                                        </div>
+                                    </div>
+                                    <button onclick="viewTicket('{{ $ticket['ticket_id'] }}')" class="w-full px-4 py-2 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
+                                        View Tickets
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="bg-white/5 rounded-2xl p-12 border border-white/10 text-center">
+                        <p class="text-gray-400">No upcoming events. Browse events to book tickets!</p>
+                        <a href="{{ route('homepage') }}" class="inline-block mt-4 px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
+                            Browse Events
+                        </a>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Past Events -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Past Events</h3>
+                @if(count($pastEvents) > 0)
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($pastEvents as $ticket)
+                            <!-- Past Ticket Card -->
+                            <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition opacity-75">
+                                <div class="h-40 bg-gradient-to-br from-gray-500/20 to-gray-700/20 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="text-6xl font-bold mb-2">{{ $ticket['date_day'] }}</div>
+                                        <div class="text-sm text-gray-400">{{ $ticket['date_month_year'] }}</div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <h4 class="font-bold text-lg">{{ $ticket['event_title'] }}</h4>
+                                        <span class="px-2 py-1 bg-gray-500/20 text-gray-400 rounded-full text-xs font-semibold">Attended</span>
+                                    </div>
+                                    <div class="space-y-2 text-sm text-gray-400 mb-4">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span>{{ $ticket['location'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>{{ $ticket['time'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                                            </svg>
+                                            <span>{{ $ticket['tickets_count'] }} {{ $ticket['tickets_count'] == 1 ? 'Ticket' : 'Tickets' }}</span>
+                                        </div>
+                                    </div>
+                                    <button onclick="viewTicket('{{ $ticket['ticket_id'] }}')" class="w-full px-4 py-2 bg-white/10 text-white rounded-full font-semibold hover:bg-white/20 transition">
+                                        View Past Ticket
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="bg-white/5 rounded-2xl p-8 border border-white/10 text-center">
+                        <p class="text-gray-400">No past events yet.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="content-settings" class="hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold mb-2">Account Settings</h2>
+                <p class="text-gray-400">Manage your account preferences</p>
+            </div>
+
+            <div class="max-w-3xl space-y-6">
+                @if(session('success'))
+                    <div class="bg-green-500/20 border border-green-500/50 text-green-400 px-4 py-3 rounded-xl">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                
+                @if($errors->any())
+                    <div class="bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-xl">
+                        <ul class="list-disc list-inside">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                
+                <!-- Password -->
+                <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                    <h3 class="text-lg font-bold mb-4">Change Password</h3>
+                    <form action="{{ route('account.password.update') }}" method="POST" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Current Password</label>
+                            <input type="password" name="current_password" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">New Password</label>
+                            <input type="password" name="new_password" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Confirm New Password</label>
+                            <input type="password" name="new_password_confirmation" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
+                        </div>
+                        <button type="submit" class="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200">
+                            Update Password
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="bg-red-500/10 rounded-2xl p-6 border border-red-500/20">
+                    <h3 class="text-lg font-bold mb-2 text-red-400">Danger Zone</h3>
+                    <p class="text-sm text-gray-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+                    <form id="deleteAccountForm" action="{{ route('account.delete') }}" method="POST" style="display: none;">
+                        @csrf
+                        @method('DELETE')
+                        <input type="password" name="password" id="deletePassword" required>
+                    </form>
+                    <button onclick="confirmDelete()" class="px-6 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-full font-semibold hover:bg-red-500/30 transition">
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script>
-        function switchTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-            });
+<style>
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
 
-            // Show selected tab content
-            document.getElementById(tabName + '-content').classList.remove('hidden');
+<script>
+    // Tab switching
+    function showTab(tab) {
+        document.querySelectorAll('[id^="content-"]').forEach(el => el.classList.add('hidden'));
+        document.getElementById('content-' + tab).classList.remove('hidden');
+        document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+            btn.classList.remove('bg-white', 'text-black', 'font-semibold');
+            btn.classList.add('bg-white/5', 'border', 'border-white/10');
+        });
+        document.getElementById('tab-' + tab).classList.remove('bg-white/5', 'border', 'border-white/10');
+        document.getElementById('tab-' + tab).classList.add('bg-white', 'text-black', 'font-semibold');
+    }
 
-            // Update tab styling - remove active styles from all tabs
-            document.querySelectorAll('.tab-link').forEach(link => {
-                link.classList.remove('border-blue-500', 'text-blue-400');
-                link.classList.add('border-transparent', 'text-gray-400');
-            });
+    // Show/Hide Edit Profile Form
+    function showEditProfile() {
+        document.getElementById('editProfileForm').classList.remove('hidden');
+        document.getElementById('editProfileForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
-            // Add active styles to selected tab
-            const activeTab = document.getElementById(tabName + '-tab');
-            activeTab.classList.remove('border-transparent', 'text-gray-400');
-            activeTab.classList.add('border-blue-500', 'text-blue-400');
+    function hideEditProfile() {
+        document.getElementById('editProfileForm').classList.add('hidden');
+    }
+
+    // View Ticket
+    function viewTicket(ticketId) {
+        alert('Opening ticket: ' + ticketId + '\n\nTicket details and QR code would be displayed here.');
+    }
+
+    // Confirm Delete Account
+    function confirmDelete() {
+        const password = prompt('⚠️ WARNING: This will permanently delete your account!\n\nTo confirm, please enter your password:');
+        
+        if (password) {
+            document.getElementById('deletePassword').value = password;
+            document.getElementById('deleteAccountForm').submit();
         }
+    }
 
-        function confirmDelete() {
-            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                const password = prompt('Please enter your password to confirm:');
-                if (password) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '{{ route("account.delete") }}';
-                    
-                    const csrfToken = document.createElement('input');
-                    csrfToken.type = 'hidden';
-                    csrfToken.name = '_token';
-                    csrfToken.value = '{{ csrf_token() }}';
-                    
-                    const methodField = document.createElement('input');
-                    methodField.type = 'hidden';
-                    methodField.name = '_method';
-                    methodField.value = 'DELETE';
-                    
-                    const passwordField = document.createElement('input');
-                    passwordField.type = 'hidden';
-                    passwordField.name = 'password';
-                    passwordField.value = password;
-                    
-                    form.appendChild(csrfToken);
-                    form.appendChild(methodField);
-                    form.appendChild(passwordField);
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            }
+    // Initialize profile tab on load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check for tab parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab');
+        
+        if (tabParam && ['profile', 'tickets', 'settings'].includes(tabParam)) {
+            showTab(tabParam);
+        } else {
+            showTab('profile');
         }
-
-        // Check if there are errors and switch to settings tab
+        
+        // Show edit profile form if there are validation errors
         @if($errors->any())
-        document.addEventListener('DOMContentLoaded', function() {
-            switchTab('settings');
-        });
+            @if(old('first_name') || old('last_name') || old('email'))
+                showEditProfile();
+            @endif
+            @if(old('current_password') || old('new_password'))
+                showTab('settings');
+            @endif
         @endif
-
-        // Check for success message and switch to settings tab
+        
+        // Show success messages
         @if(session('success'))
-        document.addEventListener('DOMContentLoaded', function() {
-            switchTab('settings');
-        });
+            setTimeout(() => {
+                const successAlert = document.querySelector('.bg-green-500\\/20');
+                if (successAlert) {
+                    successAlert.style.transition = 'opacity 0.5s';
+                    successAlert.style.opacity = '0';
+                    setTimeout(() => successAlert.remove(), 500);
+                }
+            }, 5000);
         @endif
-    </script>
-</body>
+    });
 
-</html>
-    </script>
-</body>
-
-</html>
+    // Function to handle tab switching from URL
+    function showTabFromUrl(tabName) {
+        if (window.location.pathname.includes('account-design')) {
+            setTimeout(() => {
+                showTab(tabName);
+            }, 100);
+        }
+    }
+</script>
+@endsection

@@ -70,25 +70,67 @@
                         </label>
                     </div>
 
-                    <!-- Card Details (shown when card is selected) -->
-                    <div id="cardDetails" class="mt-6 space-y-4">
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">Card Number</label>
-                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19"
-                                   class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
+                    <!-- Payment Details Container -->
+                    <div class="mt-6">
+                        <!-- Card Details (shown when card is selected) -->
+                        <div id="cardDetails" class="space-y-4">
                             <div>
-                                <label class="block text-sm text-gray-400 mb-2">Expiry Date</label>
-                                <input type="text" id="expiry" placeholder="MM / YY" maxlength="7"
+                                <label class="block text-sm text-gray-400 mb-2">Card Number</label>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19"
                                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
                             </div>
-                            <div>
-                                <label class="block text-sm text-gray-400 mb-2">CVV</label>
-                                <input type="text" id="cvv" placeholder="123" maxlength="3"
-                                       class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-2">Expiry Date</label>
+                                    <input type="text" id="expiry" placeholder="MM / YY" maxlength="7"
+                                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-2">CVV</label>
+                                    <input type="text" id="cvv" placeholder="123" maxlength="3"
+                                           class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+                                </div>
                             </div>
                         </div>
+
+                        <!-- iDEAL Details (shown when iDEAL is selected) -->
+                        <div id="idealDetails" class="space-y-4" style="display: none;">
+                            <div>
+                            <label class="block text-sm text-gray-400 mb-2">Select Your Bank</label>
+                            <select id="idealBank" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 transition">
+                                <option value="">Choose your bank...</option>
+                                <option value="abn_amro">ABN AMRO</option>
+                                <option value="asn">ASN Bank</option>
+                                <option value="bunq">Bunq</option>
+                                <option value="ing">ING</option>
+                                <option value="knab">Knab</option>
+                                <option value="rabobank">Rabobank</option>
+                                <option value="regiobank">RegioBank</option>
+                                <option value="revolut">Revolut</option>
+                                <option value="sns">SNS Bank</option>
+                                <option value="triodos">Triodos Bank</option>
+                            </select>
+                        </div>
+                        <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 text-sm text-blue-300">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <p>You will be redirected to your bank to complete the payment securely.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PayPal Details (shown when PayPal is selected) -->
+                    <div id="paypalDetails" class="space-y-4" style="display: none;">
+                        <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 text-center">
+                            <svg class="w-16 h-16 mx-auto mb-3 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .759-.63h8.975c.468 0 .92.084 1.337.247 1.235.485 2.028 1.528 2.28 3.008.244 1.43.027 2.666-.648 3.671-.7 1.04-1.805 1.787-3.282 2.218-.373.108-.768.162-1.172.162h-2.316a.768.768 0 0 0-.759.63l-1.158 6.311zm13.073-14.384c.014.117.02.235.02.354 0 .794-.145 1.56-.428 2.28-.283.72-.696 1.363-1.228 1.91a5.839 5.839 0 0 1-1.91 1.299c-.745.31-1.571.465-2.454.465h-.467a.768.768 0 0 0-.759.63l-.854 4.657a.641.641 0 0 1-.633.546H8.786a.384.384 0 0 1-.38-.444l.79-4.306a1.152 1.152 0 0 1 1.138-.948h1.652c3.156 0 5.407-1.283 6.333-3.616.393-.99.577-2.04.55-3.126z"/>
+                            </svg>
+                            <p class="text-sm text-gray-300 mb-4">Click "Complete Purchase" to proceed to PayPal</p>
+                            <p class="text-xs text-gray-400">You will be redirected to PayPal to complete your payment securely.</p>
+                        </div>
+                    </div>
                     </div>
                 </div>
 
@@ -193,6 +235,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        try {
         const MAX_TICKETS = 10;
         
         // Get cart from localStorage
@@ -244,27 +287,46 @@
         
         // Render cart items
         function renderCart() {
-            const cart = getCart();
-            const container = document.getElementById('cartItemsContainer');
-            const emptyMessage = document.getElementById('emptyCartMessage');
+            try {
+                const cart = getCart();
+                const container = document.getElementById('cartItemsContainer');
+                const emptyMessage = document.getElementById('emptyCartMessage');
+                
+                if (!container || !emptyMessage) {
+                    console.error('Cart container elements not found');
+                    return;
+                }
+                
+                if (cart.length === 0) {
+                    container.innerHTML = '';
+                    emptyMessage.classList.remove('hidden');
+                    updateSummary(cart);
+                    return;
+                }
+                
+                emptyMessage.classList.add('hidden');
             
-            if (cart.length === 0) {
-                container.innerHTML = '';
-                emptyMessage.classList.remove('hidden');
-                updateSummary(cart);
-                return;
-            }
-            
-            emptyMessage.classList.add('hidden');
-            
-            container.innerHTML = cart.map(item => `
+            container.innerHTML = cart.map(item => {
+                // Get category icon and color
+                const categoryIcons = {
+                    'music': { icon: 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3', color: 'from-purple-500 to-pink-500' },
+                    'sports': { icon: 'M3 3l1.664 1.664M21 21l-1.5-1.5m-2.829-2.829L15.5 15.5M4.929 4.929L7.757 7.757M9.879 16.121A3 3 0 1012.015 11L11 17H7v4M2.5 2.5l19 19', color: 'from-green-500 to-teal-500' },
+                    'theater': { icon: 'M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z', color: 'from-red-500 to-orange-500' },
+                    'comedy': { icon: 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', color: 'from-yellow-500 to-amber-500' },
+                    'family': { icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', color: 'from-blue-500 to-cyan-500' }
+                };
+                
+                const category = (item.category || 'music').toLowerCase();
+                const iconData = categoryIcons[category] || categoryIcons['music'];
+                
+                return `
                 <div class="bg-white/5 rounded-xl p-4 border border-white/10">
                     <!-- Event Info -->
                     <div class="flex gap-3 mb-3">
-                        <div class="w-20 h-20 rounded-lg overflow-hidden bg-white/10 flex-shrink-0">
-                            <img src="${item.image || '/resources/img/concert1.png'}" 
-                                 alt="${item.title}"
-                                 class="w-full h-full object-cover">
+                        <div class="w-20 h-20 rounded-lg bg-gradient-to-br ${iconData.color} flex items-center justify-center flex-shrink-0">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconData.icon}"/>
+                            </svg>
                         </div>
                         <div class="flex-1 min-w-0">
                             <h4 class="font-semibold text-sm mb-1 truncate">${item.title}</h4>
@@ -318,9 +380,13 @@
                         </div>
                     ` : ''}
                 </div>
-            `).join('');
+                `;
+            }).join('');
             
             updateSummary(cart);
+            } catch (error) {
+                console.error('Error rendering cart:', error);
+            }
         }
         
         // Update order summary
@@ -358,13 +424,23 @@
         // Payment method toggle
         const paymentRadios = document.querySelectorAll('input[name="payment"]');
         const cardDetails = document.getElementById('cardDetails');
+        const idealDetails = document.getElementById('idealDetails');
+        const paypalDetails = document.getElementById('paypalDetails');
         
         paymentRadios.forEach(radio => {
             radio.addEventListener('change', function() {
+                // Hide all payment details
+                cardDetails.style.display = 'none';
+                idealDetails.style.display = 'none';
+                paypalDetails.style.display = 'none';
+                
+                // Show selected payment method details
                 if (this.value === 'card') {
                     cardDetails.style.display = 'block';
-                } else {
-                    cardDetails.style.display = 'none';
+                } else if (this.value === 'ideal') {
+                    idealDetails.style.display = 'block';
+                } else if (this.value === 'paypal') {
+                    paypalDetails.style.display = 'block';
                 }
                 validateForm();
             });
@@ -409,7 +485,7 @@
                 return field && field.value.trim() !== '';
             });
             
-            // Check payment fields (only if card is selected)
+            // Check payment fields based on selected payment method
             const selectedPayment = document.querySelector('input[name="payment"]:checked')?.value;
             let paymentValid = true;
             
@@ -418,6 +494,12 @@
                     const field = document.getElementById(fieldId);
                     return field && field.value.trim() !== '';
                 });
+            } else if (selectedPayment === 'ideal') {
+                const idealBank = document.getElementById('idealBank');
+                paymentValid = idealBank && idealBank.value.trim() !== '';
+            } else if (selectedPayment === 'paypal') {
+                // PayPal doesn't need additional fields
+                paymentValid = true;
             }
             
             // Check terms
@@ -442,11 +524,99 @@
             }
         });
         
+        // Add validation listener for iDEAL bank selection
+        const idealBank = document.getElementById('idealBank');
+        if (idealBank) {
+            idealBank.addEventListener('change', validateForm);
+        }
+        
         termsCheckbox.addEventListener('change', validateForm);
         
         paymentRadios.forEach(radio => {
             radio.addEventListener('change', validateForm);
         });
+        
+        // Handle form submission
+        const purchaseForm = document.getElementById('purchaseForm');
+        purchaseForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default to show fake payment processing
+            
+            const cart = getCart();
+            const selectedPayment = document.querySelector('input[name="payment"]:checked')?.value;
+            
+            // Show payment processing modal
+            showPaymentProcessing(selectedPayment);
+            
+            // Simulate payment processing (2 seconds)
+            setTimeout(() => {
+                // Populate hidden fields with cart data
+                document.getElementById('formCartData').value = JSON.stringify(cart);
+                
+                // Calculate and set total
+                const subtotal = cart.reduce((sum, item) => sum + (item.quantity * parseFloat(item.price)), 0);
+                const serviceFee = cart.reduce((sum, item) => sum + (item.quantity * 4.475), 0);
+                const processingFee = 2.50;
+                const total = subtotal + serviceFee + processingFee;
+                
+                document.getElementById('formTotal').value = total.toFixed(2);
+                
+                // Show success and actually submit
+                showPaymentSuccess(selectedPayment);
+                
+                // Clear cart after successful payment
+                localStorage.removeItem('cart');
+                window.dispatchEvent(new Event('cartUpdated'));
+                
+                // Submit form after showing success (3 seconds)
+                setTimeout(() => {
+                    purchaseForm.submit();
+                }, 3000);
+            }, 2000);
+        });
+        
+        // Show payment processing modal
+        function showPaymentProcessing(paymentMethod) {
+            const methodNames = {
+                'card': 'Card',
+                'ideal': 'iDEAL',
+                'paypal': 'PayPal'
+            };
+            
+            const modal = document.createElement('div');
+            modal.id = 'paymentModal';
+            modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 text-center max-w-md">
+                    <div class="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+                    <h3 class="text-xl font-bold mb-2">Processing Payment</h3>
+                    <p class="text-gray-400">Please wait while we process your ${methodNames[paymentMethod]} payment...</p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // Show payment success
+        function showPaymentSuccess(paymentMethod) {
+            const modal = document.getElementById('paymentModal');
+            if (modal) {
+                modal.innerHTML = `
+                    <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 text-center max-w-md">
+                        <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 text-green-400">Payment Successful!</h3>
+                        <p class="text-gray-400">Your tickets have been confirmed. Redirecting to your account...</p>
+                    </div>
+                `;
+            }
+        }
+        } catch (error) {
+            console.error('Checkout page error:', error);
+            // Prevent infinite loop by showing error
+            document.body.innerHTML = '<div style="color: white; padding: 20px;">Error loading checkout. Please refresh the page. Error: ' + error.message + '</div>';
+        }
     });
 </script>
 @endsection

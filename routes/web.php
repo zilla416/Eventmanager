@@ -18,103 +18,113 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
-Route::get('/account-design', function () {
+Route::get('/account', function () {
     // Check if user is logged in
     if (!auth()->check()) {
         return redirect()->route('loginpage')->with('error', 'Please login to access your account.');
     }
 
     $user = auth()->user();
+    $upcomingTickets = [];
+    $pastEvents = [];
+    $upcomingEventsCount = 0;
+    $totalTickets = 0;
+    $eventsAttended = 0;
+    $memberSince = $user->created_at ? $user->created_at->format('M Y') : 'Jan 2025';
 
-    // Get user's tickets/events from database
-    // For now using dummy data, replace with actual database queries later
-    $upcomingTickets = [
-        [
-            'id' => 1,
-            'event_title' => 'Summer Music Festival',
-            'date' => 'JUN 15, 2025',
-            'time' => '7:00 PM',
-            'location' => 'Central Park, NY',
-            'tickets_count' => 2,
-            'ticket_id' => 'SMF2025'
-        ],
-        [
-            'id' => 2,
-            'event_title' => 'Tech Conference 2025',
-            'date' => 'JUL 20, 2025',
-            'time' => '9:00 AM',
-            'location' => 'Convention Center',
-            'tickets_count' => 1,
-            'ticket_id' => 'TC2025'
-        ]
-    ];
-
-    $pastEvents = [
-        [
-            'event_title' => 'Jazz Night Experience',
-            'date' => 'March 10, 2025',
-            'location' => 'Blue Note Jazz Club'
-        ],
-        [
-            'event_title' => 'Rock Concert Spectacular',
-            'date' => 'February 14, 2025',
-            'location' => 'Madison Square Garden'
-        ]
-    ];
-
-        // Attempt to load real orders if orders table has been extended
-        $totalSpent = 0;
-        $upcomingEventsCount = count($upcomingTickets);
-        $totalTickets = array_sum(array_column($upcomingTickets, 'tickets_count'));
-        $eventsAttended = count($pastEvents);
-        $memberSince = $user->created_at ? $user->created_at->format('M Y') : 'Jan 2025';
-
-        try {
-            // Lazy-load orders only if columns exist
-            if (\Schema::hasTable('orders') && \Schema::hasColumn('orders', 'customer_id') && \Schema::hasColumn('orders', 'event_id')) {
-                $ordersQuery = App\Models\Order::where('customer_id', $user->id)->get();
-                $upcomingTickets = $ordersQuery->map(function($order) {
-                    // Try to load event info
-                    $event = App\Models\Event::find($order->event_id);
-                    return [
-                        'id' => $order->order_id,
-                        'ticket_id' => $order->order_id,
-                        'event_title' => $event ? $event->title : 'Unknown Event',
-                        'date' => $event ? strtoupper(date('M d, Y', strtotime($event->date))) : 'TBD',
-                        'time' => $event ? date('g:i A', strtotime($event->time)) : '',
-                        'location' => $event ? $event->location : '',
-                        'tickets_count' => $order->quantity ?? 1,
+    try {
+        // Load real orders from database
+        if (\Schema::hasTable('orders') && \Schema::hasColumn('orders', 'customer_id') && \Schema::hasColumn('orders', 'event_id')) {
+            $orders = App\Models\Order::where('customer_id', $user->id)->get();
+            $today = \Carbon\Carbon::today();
+            
+            // Group orders by event_id to consolidate duplicate events
+            $eventGroups = [];
+            
+            foreach ($orders as $order) {
+                $event = App\Models\Event::find($order->event_id);
+                if (!$event) continue;
+                
+                $eventId = $event->event_id;
+                
+                // If this event hasn't been added yet, initialize it
+                if (!isset($eventGroups[$eventId])) {
+                    $eventDate = \Carbon\Carbon::parse($event->date);
+                    $eventTime = $event->time ? \Carbon\Carbon::parse($event->time)->format('g:i A') : 'TBA';
+                    
+                    $eventGroups[$eventId] = [
+                        'event' => $event,
+                        'event_date' => $eventDate,
+                        'event_time' => $eventTime,
+                        'orders' => [],
+                        'total_tickets' => 0
                     ];
-                })->toArray();
-
-                $totalSpent = $ordersQuery->sum('total');
-                $upcomingEventsCount = count($upcomingTickets);
-                $totalTickets = $ordersQuery->sum('quantity');
+                }
+                
+                // Add this order to the event group
+                $eventGroups[$eventId]['orders'][] = $order;
+                $eventGroups[$eventId]['total_tickets'] += $order->quantity ?? 1;
             }
-        } catch (\Exception $e) {
-            // If anything goes wrong, fall back to dummy data above
+            
+            // Now create the ticket arrays with consolidated data
+            foreach ($eventGroups as $eventId => $group) {
+                $event = $group['event'];
+                $eventDate = $group['event_date'];
+                $eventTime = $group['event_time'];
+                
+                // Get the first order for ticket ID (or create a combined one)
+                $firstOrder = $group['orders'][0];
+                $orderIds = array_map(fn($o) => $o->order_id, $group['orders']);
+                
+                $eventData = [
+                    'id' => $firstOrder->order_id,
+                    'ticket_id' => 'TKT-' . str_pad($firstOrder->order_id, 6, '0', STR_PAD_LEFT),
+                    'order_ids' => $orderIds, // Store all order IDs for this event
+                    'event_title' => $event->title,
+                    'date' => $eventDate->format('M d, Y'),
+                    'date_day' => $eventDate->format('d'),
+                    'date_month_year' => $eventDate->format('M Y'),
+                    'time' => $eventTime,
+                    'location' => $event->location,
+                    'tickets_count' => $group['total_tickets'], // Total tickets for this event
+                ];
+                
+                // Check if event is in the future (after today)
+                if ($eventDate->isAfter($today)) {
+                    $upcomingTickets[] = $eventData;
+                } else {
+                    // Past or today events - include full ticket data
+                    $pastEvents[] = $eventData;
+                }
+            }
+            
+            $upcomingEventsCount = count($upcomingTickets);
+            $totalTickets = $orders->sum('quantity');
+            $eventsAttended = count($pastEvents);
         }
+    } catch (\Exception $e) {
+        // If anything goes wrong, use empty arrays
+        \Log::error('Error loading user tickets: ' . $e->getMessage());
+    }
 
-        return view('account-design', compact(
-            'user',
-            'upcomingTickets',
-            'pastEvents',
-            'totalSpent',
-            'upcomingEventsCount',
-            'totalTickets',
-            'eventsAttended',
-            'memberSince'
-        ));
-})->name('account-designpage');
+    return view('account', compact(
+        'user',
+        'upcomingTickets',
+        'pastEvents',
+        'upcomingEventsCount',
+        'totalTickets',
+        'eventsAttended',
+        'memberSince'
+    ));
+})->name('account');
 Route::get('/home', function () {
     $events = Event::orderBy('date', 'asc')->get();
 
     return view('home', compact('events'));
 })->name('homepage');
 
-Route::get('/event', function () {
-    $event = Event::first(); // just grabs the first event in DB
-
+Route::get('/event/{id}', function ($id) {
+    $event = Event::findOrFail($id);
     return view('event', compact('event'));
 })->name('eventpage');
 
@@ -124,7 +134,7 @@ Route::get('/checkout', function () {
     return view('checkout');
 })->name('checkout');
 
-// Purchase endpoint: accepts event_id, quantity, total and creates an order for authenticated user
+// Purchase endpoint: accepts cart_data and creates orders for authenticated user
 Route::post('/purchase', function (Illuminate\Http\Request $request) {
     if (!auth()->check()) {
         return redirect()->route('loginpage')->with('error', 'Please login to complete purchase.');
@@ -133,8 +143,7 @@ Route::post('/purchase', function (Illuminate\Http\Request $request) {
     $user = auth()->user();
 
     $data = $request->validate([
-        'event_id' => 'required|integer|exists:events,event_id',
-        'quantity' => 'required|integer|min:1',
+        'cart_data' => 'required|string',
         'total' => 'required|numeric|min:0',
     ]);
 
@@ -143,108 +152,40 @@ Route::post('/purchase', function (Illuminate\Http\Request $request) {
         return back()->with('error', 'Order table is not configured to store purchases. Please run the migration to add order columns.');
     }
 
-    // Create order
-    $order = App\Models\Order::create([
-        'order_date' => time(),
-        'customer_id' => $user->id,
-        'event_id' => $data['event_id'],
-        'quantity' => $data['quantity'],
-        'total' => $data['total'],
-        'status' => 'completed',
-    ]);
-
-    // Update event counts
-    $event = App\Models\Event::find($data['event_id']);
-    if ($event) {
-        $event->available_spots = max(0, ($event->available_spots ?? $event->max_spots ?? 0) - $data['quantity']);
-        $event->tickets_sold = ($event->tickets_sold ?? 0) + $data['quantity'];
-        $event->revenue = ($event->revenue ?? 0) + intval(round($data['total']));
-        $event->save();
+    // Parse cart data
+    $cartItems = json_decode($data['cart_data'], true);
+    
+    if (empty($cartItems)) {
+        return back()->with('error', 'Your cart is empty.');
     }
 
-    return redirect()->route('account-designpage')->with('success', 'Purchase completed. Your tickets are in your account.');
+    // Create orders for each cart item
+    foreach ($cartItems as $item) {
+        $itemTotal = $item['quantity'] * floatval($item['price']);
+        $serviceFee = $item['quantity'] * 4.475;
+        $itemTotalWithFees = $itemTotal + $serviceFee;
+        
+        $order = App\Models\Order::create([
+            'order_date' => time(),
+            'customer_id' => $user->id,
+            'event_id' => $item['event_id'],
+            'quantity' => $item['quantity'],
+            'total' => $itemTotalWithFees,
+            'status' => 'completed',
+        ]);
+
+        // Update event counts
+        $event = App\Models\Event::find($item['event_id']);
+        if ($event) {
+            $event->available_spots = max(0, ($event->available_spots ?? $event->max_spots ?? 0) - $item['quantity']);
+            $event->tickets_sold = ($event->tickets_sold ?? 0) + $item['quantity'];
+            $event->revenue = ($event->revenue ?? 0) + intval(round($itemTotalWithFees));
+            $event->save();
+        }
+    }
+
+    return redirect()->route('account')->with('success', 'Purchase completed successfully! Your tickets are in your account.');
 })->name('purchase');
-
-// Account page
-Route::get('/account', function () {
-    // Hardcoded events list matching database structure (will be replaced with database fetch in the future)
-    $upcomingEvents = [
-        [
-            'event_id' => 1,
-            'title' => 'Concert Ziggodome',
-            'location' => 'Ziggodome',
-            'address' => 'De Passage 100, 1101 AX Amsterdam',
-            'available_spots' => 17000,
-            'date' => '2025-12-01',
-            'time' => '19:00:00',
-            'description' => 'Super cool concert',
-            'image' => 'resources/img/concert1.png',
-            'category_id' => 1,
-            'max_spots' => 17000,
-            'user_tickets' => 2,
-            'icon' => 'fas fa-music',
-            'color' => 'bg-red-600'
-        ],
-        [
-            'event_id' => 2,
-            'title' => 'Basketball Championship',
-            'location' => 'Sports Arena',
-            'address' => '123 Arena Boulevard, Los Angeles, CA',
-            'available_spots' => 15000,
-            'date' => '2025-11-15',
-            'time' => '20:00:00',
-            'description' => 'Epic basketball championship match',
-            'image' => 'resources/img/concert1.png',
-            'category_id' => 2,
-            'max_spots' => 18000,
-            'user_tickets' => 4,
-            'icon' => 'fas fa-basketball-ball',
-            'color' => 'bg-blue-600'
-        ],
-        [
-            'event_id' => 3,
-            'title' => 'Tech Innovation Summit',
-            'location' => 'Convention Center',
-            'address' => '456 Tech Street, San Francisco, CA',
-            'available_spots' => 2500,
-            'date' => '2025-10-25',
-            'time' => '09:00:00',
-            'description' => 'Latest trends in technology and innovation',
-            'image' => 'resources/img/concert1.png',
-            'category_id' => 3,
-            'max_spots' => 3000,
-            'user_tickets' => 1,
-            'icon' => 'fas fa-laptop-code',
-            'color' => 'bg-green-600'
-        ],
-        [
-            'event_id' => 4,
-            'title' => 'Modern Art Exhibition',
-            'location' => 'Art Museum',
-            'address' => '789 Culture Avenue, New York, NY',
-            'available_spots' => 800,
-            'date' => '2025-11-30',
-            'time' => '18:00:00',
-            'description' => 'Contemporary art showcase featuring emerging artists',
-            'image' => 'resources/img/concert1.png',
-            'category_id' => 4,
-            'max_spots' => 1000,
-            'user_tickets' => 3,
-            'icon' => 'fas fa-palette',
-            'color' => 'bg-purple-600'
-        ]
-    ];
-
-    // Calculate total tickets owned by the user
-    $totalTickets = array_sum(array_column($upcomingEvents, 'user_tickets'));
-
-    return view('account', compact('upcomingEvents', 'totalTickets'));
-})->name('account');
-
-// Account settings page
-Route::get('/account/settings', function () {
-    return view('account-settings');
-})->name('account.settings');
 
 // Account management routes
 Route::middleware('auth')->group(function () {
@@ -266,15 +207,58 @@ Route::post('/admin/users/{id}/demote', [CmsController::class, 'demoteUser'])->n
 Route::post('/admin/users/create-organizer', [CmsController::class, 'createOrganizer'])->name('admin.users.create-organizer');
 Route::delete('/admin/users/{id}', [CmsController::class, 'deleteUser'])->name('admin.users.delete');
 
+// Organizer routes for event management
+Route::get('/organizer/events/create', function () {
+    if (!auth()->check()) {
+        return redirect()->route('loginpage')->with('error', 'Please login to create events.');
+    }
+    if (auth()->user()->is_admin < 1) {
+        return redirect()->route('homepage')->with('error', 'Access denied.');
+    }
+    return view('organizer-event-form');
+})->name('organizer.events.create');
+
+Route::post('/organizer/events', [CmsController::class, 'store'])->name('organizer.events.store');
+
+Route::get('/organizer/events/{id}/edit', function ($id) {
+    if (!auth()->check()) {
+        return redirect()->route('loginpage')->with('error', 'Please login to edit events.');
+    }
+    
+    $user = auth()->user();
+    $event = App\Models\Event::findOrFail($id);
+    
+    // Check if user owns this event (or is admin)
+    if ($user->is_admin != 2 && $event->organizer_id != $user->id) {
+        return redirect()->route('organizer.cms')->with('error', 'You can only edit your own events.');
+    }
+    
+    return view('organizer-event-form', compact('event'));
+})->name('organizer.events.edit');
+
+Route::put('/organizer/events/{id}', [CmsController::class, 'update'])->name('organizer.events.update');
+Route::delete('/organizer/events/{id}', [CmsController::class, 'destroy'])->name('organizer.events.destroy');
+
 // Organizer CMS Dashboard - Limited functionality for event organizers
 Route::get('/organizer/cms', function () {
-    // Use the first user as organizer display name (no auth context available)
-    $organizer = User::first();
-    $organizerName = $organizer->name ?? 'Organizer';
+    if (!auth()->check()) {
+        return redirect()->route('loginpage')->with('error', 'Please login to access organizer dashboard.');
+    }
 
-    // Load events from the database. There isn't an organizer_id on events in the current schema,
-    // so we return all events ordered by date. If you later add an organizer relationship, filter here.
-    $events = App\Models\Event::orderBy('date', 'desc')->get();
+    $user = auth()->user();
+    $organizerName = $user->name;
+
+    // Admin (is_admin = 2) can see all events, organizers (is_admin = 1) see only their events
+    if ($user->is_admin == 2) {
+        // Admin sees everything
+        $events = App\Models\Event::orderBy('date', 'desc')->get();
+    } elseif ($user->is_admin == 1) {
+        // Organizer sees only their own events
+        $events = App\Models\Event::where('organizer_id', $user->id)->orderBy('date', 'desc')->get();
+    } else {
+        // Regular customers shouldn't access this page
+        return redirect()->route('homepage')->with('error', 'Access denied.');
+    }
 
     $organizerEvents = $events->map(function($event){
         return [
@@ -283,11 +267,9 @@ Route::get('/organizer/cms', function () {
             'date' => $event->date,
             'location' => $event->location,
             'tickets_sold' => $event->tickets_sold ?? 0,
-            // use max_spots as requested
             'max_spots' => $event->max_spots ?? 0,
             'status' => ($event->available_spots ?? 0) > 0 ? 'active' : 'sold_out',
             'revenue' => $event->revenue ?? 0,
-            // created_at not in events table in SQL dump, use date as fallback for display
             'created_at' => $event->created_at ?? $event->date,
         ];
     })->toArray();

@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Concert')
+@section('title', $event->title)
 
 @section('content')
 <div class="min-h-screen bg-black text-white">
     <!-- Hero Image -->
     <div class="relative h-[70vh] overflow-hidden">
-        <img src="{{ Vite::asset('resources/img/concert1.png') }}" 
-             alt="Concert" 
+        <img src="{{ Vite::asset($event->image) }}" 
+             alt="{{ $event->title }}" 
              class="w-full h-full object-cover brightness-50">
         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
         
@@ -15,15 +15,15 @@
         <div class="absolute bottom-0 left-0 right-0 p-8 md:p-16">
             <div class="max-w-6xl mx-auto">
                 <div class="inline-block px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs mb-4">
-                    MUSIC • LIVE
+                    {{ strtoupper($event->category) }} • LIVE
                 </div>
-                <h1 class="text-5xl md:text-7xl font-bold mb-4">Concert</h1>
+                <h1 class="text-5xl md:text-7xl font-bold mb-4">{{ $event->title }}</h1>
                 <div class="flex items-center gap-6 text-sm">
-                    <span>Dec 1, 2025</span>
+                    <span>{{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}</span>
                     <span>•</span>
-                    <span>19:00</span>
+                    <span>{{ \Carbon\Carbon::parse($event->time)->format('H:i') }}</span>
                     <span>•</span>
-                    <span>Ziggodome</span>
+                    <span>{{ $event->location }}</span>
                 </div>
             </div>
         </div>
@@ -40,15 +40,7 @@
                 <div>
                     <h2 class="text-2xl font-semibold mb-6">About</h2>
                     <div class="text-gray-400 space-y-4 leading-relaxed">
-                        <p>
-                            An unforgettable night at one of Amsterdam's most iconic venues. 
-                            Experience world-class sound, incredible energy, and a performance 
-                            you'll be talking about for years.
-                        </p>
-                        <p>
-                            The Ziggodome has hosted legends, and this night promises to be 
-                            another chapter in its storied history.
-                        </p>
+                        <p>{{ $event->description }}</p>
                     </div>
                 </div>
 
@@ -56,14 +48,12 @@
                 <div>
                     <h2 class="text-2xl font-semibold mb-6">Venue</h2>
                     <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-                        <h3 class="font-semibold mb-2">Ziggodome</h3>
-                        <p class="text-gray-400 text-sm mb-4">De Passage 100, 1101 AX Amsterdam</p>
+                        <h3 class="font-semibold mb-2">{{ $event->location }}</h3>
+                        <p class="text-gray-400 text-sm mb-4">{{ $event->adress }}</p>
                         <div class="flex gap-4 text-sm text-gray-400">
-                            <span>17,000 capacity</span>
+                            <span>{{ number_format($event->max_spots) }} capacity</span>
                             <span>•</span>
-                            <span>Metro nearby</span>
-                            <span>•</span>
-                            <span>Parking available</span>
+                            <span>{{ $event->available_spots }} spots available</span>
                         </div>
                     </div>
                 </div>
@@ -74,7 +64,7 @@
                     <div class="grid grid-cols-3 gap-3">
                         @for ($i = 0; $i < 6; $i++)
                         <div class="aspect-square rounded-xl overflow-hidden">
-                            <img src="{{ Vite::asset('resources/img/concert1.png') }}" 
+                            <img src="{{ Vite::asset($event->image) }}" 
                                  class="w-full h-full object-cover hover:scale-105 transition duration-300">
                         </div>
                         @endfor
@@ -90,7 +80,7 @@
                     <!-- Price Card -->
                     <div class="bg-white text-black rounded-2xl p-6">
                         <div class="mb-6">
-                            <div class="text-4xl font-bold mb-1">€89.50</div>
+                            <div class="text-4xl font-bold mb-1">€{{ number_format($event->price, 2) }}</div>
                             <div class="text-sm text-gray-500">per person</div>
                         </div>
 
@@ -105,12 +95,12 @@
                         </div>
 
                         <!-- CTA -->
-                        <a href="{{ route('checkout') }}" id="reserveBtn" class="block w-full bg-black text-white py-4 rounded-xl font-medium hover:bg-gray-900 transition mb-4 text-center">
-                            Reserve
-                        </a>
+                        <button id="addToCartBtn" class="block w-full bg-black text-white py-4 rounded-xl font-medium hover:bg-gray-900 transition mb-4 text-center">
+                            Add to Cart
+                        </button>
 
                         <div class="text-center text-xs text-gray-500">
-                            <span id="spotsAvailable">17,000</span> spots available
+                            <span id="spotsAvailable">{{ number_format($event->available_spots) }}</span> spots available
                         </div>
                     </div>
 
@@ -155,12 +145,22 @@
         let quantity = 1;
         const maxQuantity = 10;
         const minQuantity = 1;
-        const pricePerTicket = 89.50;
+        const pricePerTicket = {{ $event->price }};
+        const eventData = {
+            event_id: {{ $event->event_id }},
+            title: "{{ $event->title }}",
+            location: "{{ $event->location }}",
+            date: "{{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}",
+            time: "{{ \Carbon\Carbon::parse($event->time)->format('H:i') }}",
+            image: "{{ $event->image }}",
+            category: "{{ $event->category ?? 'music' }}",
+            price: pricePerTicket
+        };
         
         const decreaseBtn = document.getElementById('decreaseBtn');
         const increaseBtn = document.getElementById('increaseBtn');
         const quantityDisplay = document.getElementById('quantityDisplay');
-        const reserveBtn = document.getElementById('reserveBtn');
+        const addToCartBtn = document.getElementById('addToCartBtn');
         
         function updateQuantity() {
             quantityDisplay.textContent = quantity;
@@ -170,10 +170,6 @@
             decreaseBtn.style.cursor = quantity <= minQuantity ? 'not-allowed' : 'pointer';
             increaseBtn.style.opacity = quantity >= maxQuantity ? '0.5' : '1';
             increaseBtn.style.cursor = quantity >= maxQuantity ? 'not-allowed' : 'pointer';
-            
-            // Update reserve button link with quantity and price
-            const baseUrl = reserveBtn.href.split('?')[0];
-            reserveBtn.href = `${baseUrl}?quantity=${quantity}&price=${pricePerTicket}`;
         }
         
         decreaseBtn.addEventListener('click', function(e) {
@@ -190,6 +186,67 @@
                 quantity++;
                 updateQuantity();
             }
+        });
+        
+        // Add to Cart functionality
+        addToCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get existing cart
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            // Check if event already in cart
+            const existingItem = cart.find(item => item.event_id === eventData.event_id);
+            
+            if (existingItem) {
+                // Update quantity (max 10 total)
+                const newQuantity = Math.min(existingItem.quantity + quantity, maxQuantity);
+                existingItem.quantity = newQuantity;
+                
+                if (newQuantity >= maxQuantity) {
+                    alert(`Maximum ${maxQuantity} tickets per event. Cart updated to maximum.`);
+                } else {
+                    // Show success message
+                    const originalText = addToCartBtn.textContent;
+                    addToCartBtn.textContent = '✓ Added to Cart';
+                    addToCartBtn.classList.add('bg-green-600');
+                    addToCartBtn.classList.remove('bg-black');
+                    
+                    setTimeout(() => {
+                        addToCartBtn.textContent = originalText;
+                        addToCartBtn.classList.remove('bg-green-600');
+                        addToCartBtn.classList.add('bg-black');
+                    }, 2000);
+                }
+            } else {
+                // Add new item to cart
+                cart.push({
+                    ...eventData,
+                    quantity: quantity
+                });
+                
+                // Show success message
+                const originalText = addToCartBtn.textContent;
+                addToCartBtn.textContent = '✓ Added to Cart';
+                addToCartBtn.classList.add('bg-green-600');
+                addToCartBtn.classList.remove('bg-black');
+                
+                setTimeout(() => {
+                    addToCartBtn.textContent = originalText;
+                    addToCartBtn.classList.remove('bg-green-600');
+                    addToCartBtn.classList.add('bg-black');
+                }, 2000);
+            }
+            
+            // Save cart
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Trigger cart update event for header badge
+            window.dispatchEvent(new Event('cartUpdated'));
+            
+            // Reset quantity to 1
+            quantity = 1;
+            updateQuantity();
         });
         
         // Initialize

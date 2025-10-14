@@ -159,7 +159,7 @@
         <!-- Events Grid -->
         <div id="eventsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             @foreach($events as $event)
-            <a href="{{ route('eventpage') }}" class="event-card group block" data-category="{{ strtolower($event->category) }}">
+            <a href="{{ route('eventpage', ['id' => $event->event_id]) }}" class="event-card group block" data-category="{{ strtolower($event->category) }}">
                 <div class="bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 h-full hover:transform hover:scale-[1.02]">
                     <!-- Event Image -->
                     <div class="aspect-[16/10] overflow-hidden bg-white/5">

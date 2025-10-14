@@ -82,6 +82,7 @@ class CmsController extends Controller
             'category_id' => 1,
             'tickets_sold' => 0,
             'revenue' => 0,
+            'organizer_id' => auth()->user()->id,
         ]);
 
     return redirect()->back()->with('success', 'Event created');
