@@ -21,22 +21,22 @@
                         <div class="flex flex-col items-center text-center">
                             <!-- Avatar -->
                             <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-3xl font-bold mb-4">
-                                JD
+                                {{ strtoupper(substr($user->name, 0, 2)) }}
                             </div>
-                            <h2 class="text-2xl font-bold mb-1">John Doe</h2>
-                            <p class="text-gray-400 text-sm mb-4">john.doe@example.com</p>
+                            <h2 class="text-2xl font-bold mb-1">{{ $user->name }}</h2>
+                            <p class="text-gray-400 text-sm mb-4">{{ $user->email }}</p>
                             <div class="w-full space-y-2">
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-400">Member Since</span>
-                                    <span class="font-semibold">Jan 2025</span>
+                                    <span class="font-semibold">{{ $memberSince }}</span>
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-400">Total Tickets</span>
-                                    <span class="font-semibold">12</span>
+                                    <span class="font-semibold">{{ $totalTickets }}</span>
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-400">Events Attended</span>
-                                    <span class="font-semibold">8</span>
+                                    <span class="font-semibold">{{ $eventsAttended }}</span>
                                 </div>
                             </div>
                             <button onclick="showEditProfile()" class="w-full mt-6 px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
@@ -52,27 +52,17 @@
                     <div id="editProfileForm" class="bg-white/5 rounded-2xl p-6 border border-white/10 hidden">
                         <h3 class="text-xl font-bold mb-6">Edit Profile</h3>
                         <form onsubmit="handleProfileUpdate(event)" class="space-y-4">
-                            <div class="grid sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm text-gray-400 mb-2">First Name</label>
-                                    <input type="text" id="firstName" value="John" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-sm text-gray-400 mb-2">Last Name</label>
-                                    <input type="text" id="lastName" value="Doe" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
-                                </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">Full Name</label>
+                                <input type="text" id="fullName" value="{{ $user->name }}" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
                             </div>
                             <div>
                                 <label class="block text-sm text-gray-400 mb-2">Email</label>
-                                <input type="email" id="email" value="john.doe@example.com" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
+                                <input type="email" id="email" value="{{ $user->email }}" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
                             </div>
                             <div>
                                 <label class="block text-sm text-gray-400 mb-2">Phone Number</label>
-                                <input type="tel" id="phone" value="+1 (555) 123-4567" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
-                            </div>
-                            <div>
-                                <label class="block text-sm text-gray-400 mb-2">Bio</label>
-                                <textarea id="bio" rows="3" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white" placeholder="Tell us about yourself...">Event enthusiast and music lover</textarea>
+                                <input type="tel" id="phone" value="" placeholder="+1 (555) 123-4567" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white">
                             </div>
                             <div class="flex gap-3">
                                 <button type="submit" class="px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200">Save Changes</button>
@@ -128,15 +118,15 @@
                     <div class="grid sm:grid-cols-3 gap-4">
                         <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
                             <div class="text-sm text-gray-400 mb-2">Total Spent</div>
-                            <div class="text-2xl font-bold">$1,240</div>
+                            <div class="text-2xl font-bold">${{ number_format($totalSpent) }}</div>
                         </div>
                         <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
                             <div class="text-sm text-gray-400 mb-2">Upcoming Events</div>
-                            <div class="text-2xl font-bold">4</div>
+                            <div class="text-2xl font-bold">{{ $upcomingEventsCount }}</div>
                         </div>
                         <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
                             <div class="text-sm text-gray-400 mb-2">Total Tickets</div>
-                            <div class="text-2xl font-bold">12</div>
+                            <div class="text-2xl font-bold">{{ $totalTickets }}</div>
                         </div>
                     </div>
                 </div>
@@ -153,102 +143,77 @@
             <!-- Upcoming Tickets -->
             <div class="mb-8">
                 <h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Ticket Card 1 -->
-                    <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition">
-                        <div class="h-40 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-                            <div class="text-center">
-                                <div class="text-6xl font-bold mb-2">15</div>
-                                <div class="text-sm text-gray-400">JUN 2025</div>
+                @if(count($upcomingTickets) > 0)
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($upcomingTickets as $ticket)
+                            <!-- Ticket Card -->
+                            <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition">
+                                <div class="h-40 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="text-6xl font-bold mb-2">{{ explode(' ', $ticket['date'])[1] }}</div>
+                                        <div class="text-sm text-gray-400">{{ explode(' ', $ticket['date'])[0] }} {{ explode(' ', $ticket['date'])[2] }}</div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="font-bold text-lg mb-2">{{ $ticket['event_title'] }}</h4>
+                                    <div class="space-y-2 text-sm text-gray-400 mb-4">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span>{{ $ticket['location'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>{{ $ticket['time'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                                            </svg>
+                                            <span>{{ $ticket['tickets_count'] }} {{ $ticket['tickets_count'] == 1 ? 'Ticket' : 'Tickets' }}</span>
+                                        </div>
+                                    </div>
+                                    <button onclick="viewTicket('{{ $ticket['ticket_id'] }}')" class="w-full px-4 py-2 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
+                                        View Tickets
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="p-4">
-                            <h4 class="font-bold text-lg mb-2">Summer Music Festival</h4>
-                            <div class="space-y-2 text-sm text-gray-400 mb-4">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                    <span>Central Park, NY</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span>7:00 PM</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
-                                    </svg>
-                                    <span>2 Tickets</span>
-                                </div>
-                            </div>
-                            <button onclick="viewTicket('SMF2025')" class="w-full px-4 py-2 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
-                                View Tickets
-                            </button>
-                        </div>
+                        @endforeach
                     </div>
-
-                    <!-- Ticket Card 2 -->
-                    <div class="bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition">
-                        <div class="h-40 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-                            <div class="text-center">
-                                <div class="text-6xl font-bold mb-2">20</div>
-                                <div class="text-sm text-gray-400">JUL 2025</div>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h4 class="font-bold text-lg mb-2">Tech Conference 2025</h4>
-                            <div class="space-y-2 text-sm text-gray-400 mb-4">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                    <span>Convention Center</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span>9:00 AM</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
-                                    </svg>
-                                    <span>1 Ticket</span>
-                                </div>
-                            </div>
-                            <button onclick="viewTicket('TC2025')" class="w-full px-4 py-2 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
-                                View Tickets
-                            </button>
-                        </div>
+                @else
+                    <div class="bg-white/5 rounded-2xl p-12 border border-white/10 text-center">
+                        <p class="text-gray-400">No upcoming events. Browse events to book tickets!</p>
+                        <a href="{{ route('homepage') }}" class="inline-block mt-4 px-6 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition">
+                            Browse Events
+                        </a>
                     </div>
-                </div>
+                @endif
             </div>
 
             <!-- Past Events -->
             <div>
                 <h3 class="text-lg font-semibold mb-4">Past Events</h3>
-                <div class="space-y-4">
-                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div class="flex-1">
-                            <h4 class="font-bold mb-1">Jazz Night Experience</h4>
-                            <div class="text-sm text-gray-400">March 10, 2025 • Blue Note Jazz Club</div>
-                        </div>
-                        <span class="px-3 py-1 bg-gray-500/20 text-gray-400 rounded-full text-xs font-semibold">Attended</span>
+                @if(count($pastEvents) > 0)
+                    <div class="space-y-4">
+                        @foreach($pastEvents as $event)
+                            <div class="bg-white/5 rounded-2xl p-4 border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="flex-1">
+                                    <h4 class="font-bold mb-1">{{ $event['event_title'] }}</h4>
+                                    <div class="text-sm text-gray-400">{{ $event['date'] }} • {{ $event['location'] }}</div>
+                                </div>
+                                <span class="px-3 py-1 bg-gray-500/20 text-gray-400 rounded-full text-xs font-semibold">Attended</span>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div class="flex-1">
-                            <h4 class="font-bold mb-1">Rock Concert Spectacular</h4>
-                            <div class="text-sm text-gray-400">February 14, 2025 • Madison Square Garden</div>
-                        </div>
-                        <span class="px-3 py-1 bg-gray-500/20 text-gray-400 rounded-full text-xs font-semibold">Attended</span>
+                @else
+                    <div class="bg-white/5 rounded-2xl p-8 border border-white/10 text-center">
+                        <p class="text-gray-400">No past events yet.</p>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
 
@@ -331,12 +296,11 @@
     // Handle Profile Update
     function handleProfileUpdate(e) {
         e.preventDefault();
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
+        const fullName = document.getElementById('fullName').value;
         const email = document.getElementById('email').value;
         
         alert('✅ Profile Updated Successfully!\n\n' +
-              'Name: ' + firstName + ' ' + lastName + '\n' +
+              'Name: ' + fullName + '\n' +
               'Email: ' + email + '\n\n' +
               'This will be connected to the database later.');
         
@@ -372,7 +336,24 @@
 
     // Initialize profile tab on load
     document.addEventListener('DOMContentLoaded', function() {
-        showTab('profile');
+        // Check for tab parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab');
+        
+        if (tabParam && ['profile', 'tickets', 'settings'].includes(tabParam)) {
+            showTab(tabParam);
+        } else {
+            showTab('profile');
+        }
     });
+
+    // Function to handle tab switching from URL
+    function showTabFromUrl(tabName) {
+        if (window.location.pathname.includes('account-design')) {
+            setTimeout(() => {
+                showTab(tabName);
+            }, 100);
+        }
+    }
 </script>
 @endsection

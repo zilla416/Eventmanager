@@ -9,10 +9,75 @@ use Illuminate\Support\Facades\Route;
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('loginpage');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 // Register (GET shows form, POST handles register)
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+Route::get('/account-design', function () {
+    // Check if user is logged in
+    if (!auth()->check()) {
+        return redirect()->route('loginpage')->with('error', 'Please login to access your account.');
+    }
+
+    $user = auth()->user();
+
+    // Get user's tickets/events from database
+    // For now using dummy data, replace with actual database queries later
+    $upcomingTickets = [
+        [
+            'id' => 1,
+            'event_title' => 'Summer Music Festival',
+            'date' => 'JUN 15, 2025',
+            'time' => '7:00 PM',
+            'location' => 'Central Park, NY',
+            'tickets_count' => 2,
+            'ticket_id' => 'SMF2025'
+        ],
+        [
+            'id' => 2,
+            'event_title' => 'Tech Conference 2025',
+            'date' => 'JUL 20, 2025',
+            'time' => '9:00 AM',
+            'location' => 'Convention Center',
+            'tickets_count' => 1,
+            'ticket_id' => 'TC2025'
+        ]
+    ];
+
+    $pastEvents = [
+        [
+            'event_title' => 'Jazz Night Experience',
+            'date' => 'March 10, 2025',
+            'location' => 'Blue Note Jazz Club'
+        ],
+        [
+            'event_title' => 'Rock Concert Spectacular',
+            'date' => 'February 14, 2025',
+            'location' => 'Madison Square Garden'
+        ]
+    ];
+
+    // Calculate stats
+    $totalSpent = 1240; // Will be calculated from actual purchases
+    $upcomingEventsCount = count($upcomingTickets);
+    $totalTickets = array_sum(array_column($upcomingTickets, 'tickets_count'));
+    $eventsAttended = count($pastEvents);
+    $memberSince = $user->created_at ? $user->created_at->format('M Y') : 'Jan 2025';
+
+    return view('account-design', compact(
+        'user',
+        'upcomingTickets',
+        'pastEvents',
+        'totalSpent',
+        'upcomingEventsCount',
+        'totalTickets',
+        'eventsAttended',
+        'memberSince'
+    ));
+})->name('account-designpage');
 Route::get('/home', function () {
     $event = Event::first(); // just grabs the first event in DB
 
@@ -25,10 +90,6 @@ Route::get('/event', function () {
     return view('event', compact('event'));
 })->name('eventpage');
 
-Route::get('/account-design', function () {
-
-    return view('account-design');
-})->name('account-designpage');
 
 // Checkout page
 Route::get('/checkout', function () {
