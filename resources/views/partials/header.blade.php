@@ -36,12 +36,12 @@
                     <span id="locationText">Utrecht</span>
                 </button>
                 
-                <a href="{{ route('register') }}" 
+                <a href="{{ route('loginpage') }}" 
                    class="hidden md:block px-4 py-2 text-sm hover:bg-white/5 rounded-lg transition">
                     Sign in
                 </a>
                 
-                <a href="{{ route('loginpage') }}" 
+                <a href="{{ route('register') }}" 
                    class="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-200 transition">
                     Get Started
                 </a>
@@ -50,8 +50,8 @@
 
         <!-- Navigation -->
         <nav class="flex items-center gap-1 py-2 text-sm border-t border-white/5 overflow-x-auto scrollbar-hide">
+            <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="music">Music</a>
             <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="sports">Sports</a>
-            <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="music">Concerts</a>
             <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="theater">Theater</a>
             <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="comedy">Comedy</a>
             <a href="{{ route('homepage') }}" class="header-category px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap" data-category="family">Family</a>

@@ -25,6 +25,11 @@ Route::get('/event', function () {
     return view('event', compact('event'));
 })->name('eventpage');
 
+Route::get('/account-design', function () {
+
+    return view('account-design');
+})->name('account-designpage');
+
 // Checkout page
 Route::get('/checkout', function () {
     return view('checkout');
