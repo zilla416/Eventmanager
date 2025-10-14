@@ -37,6 +37,19 @@
                 </button>
                 
                 @auth
+                    <!-- Shopping Cart Button -->
+                    <a href="{{ route('checkout') }}" class="relative group">
+                        <button class="w-10 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full flex items-center justify-center transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            <!-- Cart Badge (when items in cart) -->
+                            <span id="cartBadge" style="display: none;" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                0
+                            </span>
+                        </button>
+                    </a>
+                    
                     <!-- User Avatar Dropdown -->
                     <div class="relative">
                         <button id="userMenuBtn" class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-sm font-bold hover:opacity-80 transition">
@@ -179,6 +192,29 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Update Cart Badge
+        function updateCartBadge() {
+            const cartBadge = document.getElementById('cartBadge');
+            if (cartBadge) {
+                // Get cart items from localStorage or session
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const itemCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+                
+                if (itemCount > 0) {
+                    cartBadge.textContent = itemCount;
+                    cartBadge.style.display = 'flex';
+                } else {
+                    cartBadge.style.display = 'none';
+                }
+            }
+        }
+        
+        // Update badge on page load
+        updateCartBadge();
+        
+        // Listen for cart updates (can be triggered from other pages)
+        window.addEventListener('cartUpdated', updateCartBadge);
+        
         // Header Search Functionality
         const headerSearch = document.getElementById('headerSearch');
         if (headerSearch) {

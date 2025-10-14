@@ -19,6 +19,8 @@ class Event extends Model
         'time',
         'description',
         'image',
+        'category',
+        'price',
         'category_id',
         'max_spots',
         'tickets_sold',

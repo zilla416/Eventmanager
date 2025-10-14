@@ -107,6 +107,22 @@
                             <input type="number" id="max_spots" name="max_spots" required
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
                         </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Category</label>
+                            <select id="category" name="category" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                                <option value="music">Music</option>
+                                <option value="sports">Sports</option>
+                                <option value="theater">Theater</option>
+                                <option value="comedy">Comedy</option>
+                                <option value="family">Family</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Price (€)</label>
+                            <input type="number" id="price" name="price" step="0.01" min="0" required
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-white/20">
+                        </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm text-gray-400 mb-2">Description</label>
                             <textarea id="description" name="description" rows="4"
@@ -152,6 +168,8 @@
                                 data-time="{{ $event['time'] }}"
                                 data-location="{{ $event['location'] }}"
                                 data-adress="{{ $event['adress'] }}"
+                                data-category="{{ $event['category'] ?? 'music' }}"
+                                data-price="{{ $event['price'] ?? 0 }}"
                                 data-description="{{ $event['description'] }}"
                                 >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -490,6 +508,8 @@
                 form.querySelector('#location').value = data.location || '';
                 form.querySelector('#adress').value = data.adress || '';
                 if(form.querySelector('#max_spots')) form.querySelector('#max_spots').value = data.max_spots || data.maxSpots || '';
+                if(form.querySelector('#category')) form.querySelector('#category').value = data.category || 'music';
+                if(form.querySelector('#price')) form.querySelector('#price').value = data.price || 0;
                 if(form.querySelector('#description')) form.querySelector('#description').value = data.description || '';
 
                 if(heading) heading.textContent = 'Edit Event';
@@ -508,6 +528,8 @@
                         time: btn.dataset.time,
                         location: btn.dataset.location,
                         adress: btn.dataset.adress,
+                        category: btn.dataset.category,
+                        price: btn.dataset.price,
                         description: btn.dataset.description,
                         max_spots: btn.dataset.max_spots
                     };

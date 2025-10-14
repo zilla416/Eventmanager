@@ -107,9 +107,9 @@ Route::get('/account-design', function () {
         ));
 })->name('account-designpage');
 Route::get('/home', function () {
-    $event = Event::first(); // just grabs the first event in DB
+    $events = Event::orderBy('date', 'asc')->get();
 
-    return view('home', compact('event'));
+    return view('home', compact('events'));
 })->name('homepage');
 
 Route::get('/event', function () {

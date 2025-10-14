@@ -53,6 +53,8 @@ class CmsController extends Controller
             'location' => 'required|string|max:255',
             'adress' => 'required|string|max:255',
             'max_spots' => 'required|integer',
+            'category' => 'required|string|in:music,sports,theater,comedy,family',
+            'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:5120',
             'description' => 'nullable|string',
         ]);
@@ -73,6 +75,8 @@ class CmsController extends Controller
             'adress' => $data['adress'],
             'max_spots' => $data['max_spots'],
             'available_spots' => $data['max_spots'],
+            'category' => $data['category'],
+            'price' => $data['price'],
             'description' => $data['description'] ?? '',
             'image' => $imagePath ?? $request->input('image', 'resources/img/concert1.png'),
             'category_id' => 1,
@@ -100,6 +104,8 @@ class CmsController extends Controller
             'location' => 'required|string|max:255',
             'adress' => 'required|string|max:255',
             'max_spots' => 'required|integer',
+            'category' => 'required|string|in:music,sports,theater,comedy,family',
+            'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:5120',
             'description' => 'nullable|string',
         ]);
@@ -118,6 +124,8 @@ class CmsController extends Controller
             'adress' => $data['adress'],
             'max_spots' => $data['max_spots'],
             'available_spots' => $data['max_spots'],
+            'category' => $data['category'],
+            'price' => $data['price'],
             'description' => $data['description'] ?? $event->description,
             'image' => $data['image'] ?? $event->image,
         ]);

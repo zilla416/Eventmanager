@@ -121,7 +121,7 @@
             </button>
         </div>
 
-        @if($event)
+        @if($events->count() > 0)
         <!-- No Results Message (hidden by default) -->
         <div id="noResultsMessage" class="text-center py-32 hidden">
             <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10">
@@ -141,10 +141,25 @@
             </div>
         </div>
 
+        <!-- No Category Results Message (hidden by default) -->
+        <div id="noCategoryResultsMessage" class="text-center py-32 hidden">
+            <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10">
+                <svg class="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">No <span id="categoryNameDisplay"></span> events yet</h3>
+            <p class="text-gray-400 text-lg mb-6">Check back soon or explore other categories</p>
+            <button id="backToAllBtn" class="px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition-all duration-200">
+                View All Events
+            </button>
+        </div>
+
         <!-- Events Grid -->
         <div id="eventsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            @for ($i = 0; $i < 6; $i++)
-            <a href="{{ route('eventpage') }}" class="event-card group block" data-category="music">
+            @foreach($events as $event)
+            <a href="{{ route('eventpage') }}" class="event-card group block" data-category="{{ strtolower($event->category) }}">
                 <div class="bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 h-full hover:transform hover:scale-[1.02]">
                     <!-- Event Image -->
                     <div class="aspect-[16/10] overflow-hidden bg-white/5">
@@ -157,7 +172,7 @@
                     <div class="p-6">
                         <!-- Meta Info -->
                         <div class="flex items-center gap-2 text-xs text-gray-500 mb-3 flex-wrap">
-                            <span class="px-3 py-1 bg-white/5 rounded-full border border-white/10">MUSIC</span>
+                            <span class="px-3 py-1 bg-white/5 rounded-full border border-white/10">{{ strtoupper($event->category) }}</span>
                             <span></span>
                             <span>{{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}</span>
                             <span></span>
@@ -183,7 +198,7 @@
                         <div class="flex items-center justify-between pt-4 border-t border-white/10">
                             <div>
                                 <p class="text-xs text-gray-500 mb-1">From</p>
-                                <p class="text-xl font-bold">€89.50</p>
+                                <p class="text-xl font-bold">€{{ number_format($event->price, 2) }}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-xs text-gray-500 mb-1">Available</p>
@@ -193,7 +208,7 @@
                     </div>
                 </div>
             </a>
-            @endfor
+            @endforeach
         </div>
 
         <!-- Load More Button -->
@@ -356,11 +371,27 @@
                     }
                 });
                 
-                // Hide no results message when filtering by category
+                // Show/hide category no results message
                 const noResultsMessage = document.getElementById('noResultsMessage');
+                const noCategoryResultsMessage = document.getElementById('noCategoryResultsMessage');
                 const eventsGrid = document.getElementById('eventsGrid');
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
+                
                 noResultsMessage.classList.add('hidden');
-                eventsGrid.classList.remove('hidden');
+                
+                if (visibleCount === 0 && category !== 'all') {
+                    noCategoryResultsMessage.classList.remove('hidden');
+                    eventsGrid.classList.add('hidden');
+                    if (loadMoreBtn) loadMoreBtn.parentElement.classList.add('hidden');
+                    
+                    // Set category name for display
+                    const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+                    document.getElementById('categoryNameDisplay').textContent = categoryName;
+                } else {
+                    noCategoryResultsMessage.classList.add('hidden');
+                    eventsGrid.classList.remove('hidden');
+                    if (loadMoreBtn) loadMoreBtn.parentElement.classList.remove('hidden');
+                }
                 
                 // Clear search input
                 const eventSearchInput = document.getElementById('eventSearch');
@@ -481,6 +512,18 @@
                 const eventsSection = document.getElementById('events-section');
                 if (eventsSection) {
                     eventsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Back to All Events Button
+        const backToAllBtn = document.getElementById('backToAllBtn');
+        if (backToAllBtn) {
+            backToAllBtn.addEventListener('click', function() {
+                // Click the "All Events" filter button
+                const allEventsBtn = document.querySelector('[data-category="all"]');
+                if (allEventsBtn) {
+                    allEventsBtn.click();
                 }
             });
         }
