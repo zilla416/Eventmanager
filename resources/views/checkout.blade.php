@@ -148,11 +148,17 @@
                         <p class="text-xs text-gray-400">All taxes included</p>
                     </div>
 
-                    <!-- Complete Purchase Button -->
-                    <button id="completePurchaseBtn" disabled
-                            class="w-full bg-white text-black py-4 rounded-xl font-semibold hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white">
-                        Complete Purchase
-                    </button>
+                                    <!-- Complete Purchase Button -->
+                                    <form id="purchaseForm" method="POST" action="{{ route('purchase') }}">
+                                        @csrf
+                                        <input type="hidden" name="event_id" id="formEventId" value="1">
+                                        <input type="hidden" name="quantity" id="formQuantity" value="2">
+                                        <input type="hidden" name="total" id="formTotal" value="190.45">
+                                        <button id="completePurchaseBtn" disabled
+                                                class="w-full bg-white text-black py-4 rounded-xl font-semibold hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white">
+                                            Complete Purchase
+                                        </button>
+                                    </form>
 
                     <!-- Security Badge -->
                     <div class="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500">
@@ -273,16 +279,17 @@
             radio.addEventListener('change', validateForm);
         });
         
-        // Complete purchase
-        completePurchaseBtn.addEventListener('click', function() {
+        // Complete purchase - submit the POST form to /purchase
+        completePurchaseBtn.addEventListener('click', function(e) {
             if (!this.disabled) {
-                // Show success message (placeholder)
-                alert('🎉 Purchase complete! You will receive a confirmation email shortly.\n\n(This will be connected to the payment gateway and database later)');
-                
-                // Redirect to account page (or confirmation page)
-                setTimeout(() => {
-                    window.location.href = '{{ route("account") }}';
-                }, 1000);
+                // populate form fields
+                const eventId = parseInt(new URLSearchParams(window.location.search).get('event_id')) || 1;
+                document.getElementById('formEventId').value = eventId;
+                document.getElementById('formQuantity').value = quantity;
+                document.getElementById('formTotal').value = total.toFixed(2);
+
+                // Submit the form
+                document.getElementById('purchaseForm').submit();
             }
         });
     });
