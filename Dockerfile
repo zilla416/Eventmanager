@@ -1,13 +1,14 @@
 # Use official PHP 8.2 image with Apache
 FROM php:8.2-apache
 
-# Install system dependencies
+# Install system dependencies and PostgreSQL libraries
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     zip \
     unzip \
     nodejs \
