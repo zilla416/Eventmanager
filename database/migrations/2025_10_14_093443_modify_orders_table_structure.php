@@ -17,16 +17,17 @@ return new class extends Migration
         }
         
         Schema::create('orders', function (Blueprint $table) {
-            $table->increments('order_id'); // Auto-incrementing primary key
-            $table->date('order_date');
-            $table->unsignedInteger('customer_id');
-            $table->unsignedInteger('event_id')->nullable();
-            $table->unsignedInteger('quantity')->default(1);
-            $table->decimal('total', 10, 2)->default(0.00);
-            $table->string('status')->default('completed');
+            $table->id('order_id'); // Auto-incrementing bigint primary key
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('event_id');
+            $table->integer('quantity');
+            $table->decimal('total', 8, 2);
+            $table->string('status', 50);
+            $table->timestamps();
             
             // Foreign keys
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('event_id')->references('event_id')->on('events')->onDelete('cascade');
         });
     }
 

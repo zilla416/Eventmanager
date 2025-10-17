@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            // Add category as string (music, sports, theater, comedy, family)
-            $table->string('category')->default('music')->after('image');
-            // Add price as decimal
-            $table->decimal('price', 10, 2)->default(0.00)->after('category');
+            if (!Schema::hasColumn('events', 'category')) {
+                $table->string('category')->default('music')->after('image');
+            }
+            if (!Schema::hasColumn('events', 'price')) {
+                $table->decimal('price', 10, 2)->default(0.00)->after('category');
+            }
         });
     }
 
