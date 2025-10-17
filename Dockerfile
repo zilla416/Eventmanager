@@ -39,9 +39,10 @@ RUN npm ci && npm run build
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configure Apache to serve from public directory
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf
+# Copy custom Apache configuration
+COPY docker-vhost.conf /etc/apache2/sites-available/000-default.conf
+
+# Enable Apache rewrite module
 RUN a2enmod rewrite
 
 # Update Apache to allow .htaccess overrides
@@ -61,6 +62,8 @@ echo "=== Laravel Startup Script ==="\n\
 echo "Working directory: $(pwd)"\n\
 echo "Checking environment..."\n\
 ls -la /var/www/html/public/\n\
+echo "Running database migrations..."\n\
+php artisan migrate --force || echo "Migration failed, continuing..."\n\
 echo "Running Laravel optimizations..."\n\
 php artisan config:clear || true\n\
 php artisan route:clear || true\n\
