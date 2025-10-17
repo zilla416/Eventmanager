@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CmsController extends Controller
 {
@@ -55,16 +56,26 @@ class CmsController extends Controller
             'max_spots' => 'required|integer',
             'category' => 'required|string|in:music,sports,theater,comedy,family',
             'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|max:5120',
+            'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:10240',
             'description' => 'nullable|string',
         ]);
 
-        // handle image upload
-        $imagePath = $request->input('image', null);
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $stored = $request->file('image')->store('events', 'public');
-            // make a public-facing path (requires `php artisan storage:link`)
-            $imagePath = 'storage/' . $stored;
+        // Handle image upload - use public directory directly
+        $imagePath = '/resources/img/concert1.png'; // Default image
+        
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            
+            if ($file->isValid()) {
+                // Generate unique filename
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                
+                // Move to public/uploads/events directory
+                $file->move(public_path('uploads/events'), $filename);
+                
+                // Store relative path from public directory
+                $imagePath = '/uploads/events/' . $filename;
+            }
         }
 
         $event = Event::create([
@@ -78,14 +89,14 @@ class CmsController extends Controller
             'category' => $data['category'],
             'price' => $data['price'],
             'description' => $data['description'] ?? '',
-            'image' => $imagePath ?? $request->input('image', 'resources/img/concert1.png'),
+            'image' => $imagePath,
             'category_id' => 1,
             'tickets_sold' => 0,
             'revenue' => 0,
             'organizer_id' => auth()->user()->id,
         ]);
 
-    return redirect()->back()->with('success', 'Event created');
+        return redirect()->back()->with('success', 'Event created successfully!');
     }
 
     public function edit($id)
@@ -107,17 +118,12 @@ class CmsController extends Controller
             'max_spots' => 'required|integer',
             'category' => 'required|string|in:music,sports,theater,comedy,family',
             'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|max:5120',
+            'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:10240',
             'description' => 'nullable|string',
         ]);
 
-        // handle image upload for update
-        if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $stored = $request->file('image')->store('events', 'public');
-            $data['image'] = 'storage/' . $stored;
-        }
-
-        $event->update([
+        // Prepare update data
+        $updateData = [
             'title' => $data['title'],
             'date' => $data['date'],
             'time' => $data['time'],
@@ -128,10 +134,37 @@ class CmsController extends Controller
             'category' => $data['category'],
             'price' => $data['price'],
             'description' => $data['description'] ?? $event->description,
-            'image' => $data['image'] ?? $event->image,
-        ]);
+        ];
 
-    return redirect()->back()->with('success', 'Event updated');
+        // Handle image upload for update - use public directory directly
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            
+            if ($file->isValid()) {
+                // Generate unique filename
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                
+                // Move to public/uploads/events directory
+                $file->move(public_path('uploads/events'), $filename);
+                
+                // Store relative path from public directory
+                $updateData['image'] = '/uploads/events/' . $filename;
+                
+                // Delete old image if it's not the default and exists in uploads
+                if ($event->image && 
+                    $event->image !== '/resources/img/concert1.png' && 
+                    strpos($event->image, '/uploads/events/') !== false) {
+                    $oldImagePath = public_path(ltrim($event->image, '/'));
+                    if (file_exists($oldImagePath)) {
+                        @unlink($oldImagePath);
+                    }
+                }
+            }
+        }
+
+        $event->update($updateData);
+
+        return redirect()->back()->with('success', 'Event updated successfully!');
     }
 
     public function destroy($id)

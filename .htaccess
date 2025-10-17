@@ -1,0 +1,12 @@
+# Try different PHP 8.2 handlers (uncomment ONE at a time)
+AddHandler application/x-httpd-ea-php82 .php
+# AddHandler application/x-httpd-php82 .php
+# AddHandler application/x-httpd-php8.2 .php
+# AddHandler fcgid-script .php
+# FCGIWrapper /usr/local/cpanel/cgi-sys/ea-php82 .php
+
+# Redirect to public folder
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

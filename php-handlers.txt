@@ -1,0 +1,14 @@
+# Alternative PHP handlers - try these if the main one doesn't work
+# Uncomment (remove #) from ONE of these lines:
+
+# For cPanel/EasyApache:
+# AddHandler application/x-httpd-ea-php82 .php
+
+# For DirectAdmin:
+# AddHandler application/x-httpd-php82 .php
+
+# For Plesk:
+# AddHandler application/x-httpd-php8.2 .php
+
+# Generic:
+# AddHandler application/x-httpd-php82 .php
