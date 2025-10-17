@@ -1,21 +1,63 @@
 services:
+  # Web Service
   - type: web
     name: event-manager
-    runtime: native
+    runtime: docker
     plan: free
-    buildCommand: bash build.sh
-    startCommand: php -S 0.0.0.0:$PORT -t public
+    region: frankfurt
+    branch: main
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /
     envVars:
+      - key: APP_NAME
+        value: Event Manager
       - key: APP_ENV
         value: production
+      - key: APP_KEY
+        value: base64:N8UOnEgZCsW8xJ0SFUXxJbCjlnxgYAtECaWEXeA5W7w=
       - key: APP_DEBUG
         value: false
+      - key: APP_URL
+        value: https://event-manager.onrender.com
+      - key: LOG_CHANNEL
+        value: stack
       - key: LOG_LEVEL
         value: error
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: eventmanager-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: eventmanager-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: eventmanager-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: eventmanager-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: eventmanager-db
+          property: password
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
         value: database
       - key: QUEUE_CONNECTION
         value: database
+      - key: BCRYPT_ROUNDS
+        value: 12
+
+databases:
+  # PostgreSQL Database
+  - name: eventmanager-db
+    databaseName: eventmanager
+    user: eventmanager
+    plan: free
+    region: frankfurt
